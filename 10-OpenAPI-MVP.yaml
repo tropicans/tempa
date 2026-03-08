@@ -1,0 +1,1064 @@
+openapi: 3.0.3
+info:
+  title: TEMPA MVP API
+  version: 1.0.0
+  description: Initial API contract for the TEMPA MVP covering authentication, program setup, project workflow, AI assistance, assessment, and dashboards.
+servers:
+  - url: https://api.tempa.local
+security:
+  - bearerAuth: []
+tags:
+  - name: Auth
+  - name: Programs
+  - name: Cohorts
+  - name: Projects
+  - name: Problem Analysis
+  - name: Decision Design
+  - name: Implementation Planning
+  - name: Monitoring
+  - name: Reflection
+  - name: Assessment
+  - name: Dashboard
+paths:
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current authenticated user
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthMeResponse'
+  /programs:
+    get:
+      tags: [Programs]
+      summary: List programs visible to current user
+      responses:
+        '200':
+          description: Program list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Program'
+    post:
+      tags: [Programs]
+      summary: Create a program
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProgramRequest'
+      responses:
+        '201':
+          description: Program created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Program'
+  /programs/{programId}:
+    get:
+      tags: [Programs]
+      summary: Get program detail
+      parameters:
+        - $ref: '#/components/parameters/ProgramId'
+      responses:
+        '200':
+          description: Program detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Program'
+  /cohorts:
+    post:
+      tags: [Cohorts]
+      summary: Create cohort
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCohortRequest'
+      responses:
+        '201':
+          description: Cohort created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cohort'
+  /cohorts/{cohortId}/enrollments:
+    post:
+      tags: [Cohorts]
+      summary: Enroll participant in cohort
+      parameters:
+        - $ref: '#/components/parameters/CohortId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEnrollmentRequest'
+      responses:
+        '201':
+          description: Enrollment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CohortParticipant'
+  /cohorts/{cohortId}/mentor-assignments:
+    post:
+      tags: [Cohorts]
+      summary: Assign mentor to participant
+      parameters:
+        - $ref: '#/components/parameters/CohortId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMentorAssignmentRequest'
+      responses:
+        '201':
+          description: Mentor assignment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorAssignment'
+  /projects:
+    get:
+      tags: [Projects]
+      summary: List projects visible to current user
+      responses:
+        '200':
+          description: Project list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+    post:
+      tags: [Projects]
+      summary: Create project
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectRequest'
+      responses:
+        '201':
+          description: Project created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+  /projects/{projectId}:
+    get:
+      tags: [Projects]
+      summary: Get project detail
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: Project detail
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectDetail'
+  /projects/{projectId}/artifacts:
+    post:
+      tags: [Projects]
+      summary: Upload project artifact metadata
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArtifactRequest'
+      responses:
+        '201':
+          description: Artifact created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProjectArtifact'
+  /projects/{projectId}/problem-statement:
+    post:
+      tags: [Problem Analysis]
+      summary: Create or update problem statement draft
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertProblemStatementRequest'
+      responses:
+        '200':
+          description: Problem statement saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemStatement'
+  /projects/{projectId}/problem-statement/submit:
+    post:
+      tags: [Problem Analysis]
+      summary: Submit problem statement for review
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: Problem statement submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemStatement'
+  /projects/{projectId}/problem-analysis:ai:
+    post:
+      tags: [Problem Analysis]
+      summary: Run AI-assisted problem analysis
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunProblemAnalysisRequest'
+      responses:
+        '200':
+          description: AI analysis result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemAnalysisResult'
+  /projects/{projectId}/problem-statement/review:
+    post:
+      tags: [Problem Analysis]
+      summary: Approve or request revision for problem statement
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewDecisionRequest'
+      responses:
+        '200':
+          description: Review decision recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProblemStatement'
+  /projects/{projectId}/decision-options:ai:
+    post:
+      tags: [Decision Design]
+      summary: Generate AI-assisted decision options
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateDecisionOptionsRequest'
+      responses:
+        '200':
+          description: Decision options generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DecisionOption'
+  /projects/{projectId}/decision-options/{decisionOptionId}/select:
+    post:
+      tags: [Decision Design]
+      summary: Select decision option for development
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+        - $ref: '#/components/parameters/DecisionOptionId'
+      responses:
+        '200':
+          description: Decision option selected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DecisionOption'
+  /projects/{projectId}/decision-options/review:
+    post:
+      tags: [Decision Design]
+      summary: Approve or request revision for selected decision package
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewDecisionRequest'
+      responses:
+        '200':
+          description: Decision review recorded
+  /projects/{projectId}/implementation-plan:
+    post:
+      tags: [Implementation Planning]
+      summary: Create or update implementation plan draft
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertImplementationPlanRequest'
+      responses:
+        '200':
+          description: Implementation plan saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImplementationPlan'
+  /projects/{projectId}/implementation-plan/submit:
+    post:
+      tags: [Implementation Planning]
+      summary: Submit implementation plan for review
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: Implementation plan submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImplementationPlan'
+  /projects/{projectId}/implementation-plan/review:
+    post:
+      tags: [Implementation Planning]
+      summary: Approve or request revision for implementation plan
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewDecisionRequest'
+      responses:
+        '200':
+          description: Implementation plan review recorded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImplementationPlan'
+  /projects/{projectId}/progress-logs:
+    post:
+      tags: [Monitoring]
+      summary: Create progress log
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProgressLogRequest'
+      responses:
+        '201':
+          description: Progress log created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProgressLog'
+  /projects/{projectId}/impact-metrics:
+    post:
+      tags: [Monitoring]
+      summary: Create impact metric
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateImpactMetricRequest'
+      responses:
+        '201':
+          description: Impact metric created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ImpactMetric'
+  /projects/{projectId}/reflections:
+    post:
+      tags: [Reflection]
+      summary: Create or update reflection journal draft
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpsertReflectionRequest'
+      responses:
+        '200':
+          description: Reflection saved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReflectionJournal'
+  /projects/{projectId}/reflections/submit:
+    post:
+      tags: [Reflection]
+      summary: Submit reflection journal
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: Reflection submitted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReflectionJournal'
+  /projects/{projectId}/reflection-analysis:ai:
+    post:
+      tags: [Reflection]
+      summary: Run AI reflection analysis
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: Reflection analysis result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReflectionAnalysisResult'
+  /projects/{projectId}/assessments:
+    post:
+      tags: [Assessment]
+      summary: Create or update assessment result
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAssessmentRequest'
+      responses:
+        '201':
+          description: Assessment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AssessmentResult'
+  /projects/{projectId}/tai-score:
+    get:
+      tags: [Assessment]
+      summary: Get current TAI score
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: TAI score
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TAIScore'
+    post:
+      tags: [Assessment]
+      summary: Calculate or publish TAI score
+      parameters:
+        - $ref: '#/components/parameters/ProjectId'
+      responses:
+        '200':
+          description: TAI score calculated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TAIScore'
+  /dashboard/participant:
+    get:
+      tags: [Dashboard]
+      summary: Get participant dashboard
+      responses:
+        '200':
+          description: Participant dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParticipantDashboard'
+  /dashboard/mentor:
+    get:
+      tags: [Dashboard]
+      summary: Get mentor dashboard
+      responses:
+        '200':
+          description: Mentor dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MentorDashboard'
+  /dashboard/executive:
+    get:
+      tags: [Dashboard]
+      summary: Get executive dashboard
+      responses:
+        '200':
+          description: Executive dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExecutiveDashboard'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    ProgramId:
+      in: path
+      name: programId
+      required: true
+      schema:
+        type: string
+        format: uuid
+    CohortId:
+      in: path
+      name: cohortId
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ProjectId:
+      in: path
+      name: projectId
+      required: true
+      schema:
+        type: string
+        format: uuid
+    DecisionOptionId:
+      in: path
+      name: decisionOptionId
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    AuthMeResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/UserSummary'
+    UserSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        fullName:
+          type: string
+        email:
+          type: string
+          format: email
+        roles:
+          type: array
+          items:
+            type: string
+    Program:
+      type: object
+      properties:
+        programId:
+          type: string
+          format: uuid
+        programCode:
+          type: string
+        programName:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+    CreateProgramRequest:
+      type: object
+      required: [programCode, programName]
+      properties:
+        programCode:
+          type: string
+        programName:
+          type: string
+        description:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+    Cohort:
+      type: object
+      properties:
+        cohortId:
+          type: string
+          format: uuid
+        programId:
+          type: string
+          format: uuid
+        cohortName:
+          type: string
+        status:
+          type: string
+    CreateCohortRequest:
+      type: object
+      required: [programId, cohortName]
+      properties:
+        programId:
+          type: string
+          format: uuid
+        cohortName:
+          type: string
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+    CreateEnrollmentRequest:
+      type: object
+      required: [userId]
+      properties:
+        userId:
+          type: string
+          format: uuid
+    CohortParticipant:
+      type: object
+      properties:
+        cohortParticipantId:
+          type: string
+          format: uuid
+        cohortId:
+          type: string
+          format: uuid
+        userId:
+          type: string
+          format: uuid
+        enrollmentStatus:
+          type: string
+    CreateMentorAssignmentRequest:
+      type: object
+      required: [mentorUserId, participantUserId]
+      properties:
+        mentorUserId:
+          type: string
+          format: uuid
+        participantUserId:
+          type: string
+          format: uuid
+    MentorAssignment:
+      type: object
+      properties:
+        mentorAssignmentId:
+          type: string
+          format: uuid
+        mentorUserId:
+          type: string
+          format: uuid
+        participantUserId:
+          type: string
+          format: uuid
+        cohortId:
+          type: string
+          format: uuid
+    Project:
+      type: object
+      properties:
+        projectId:
+          type: string
+          format: uuid
+        cohortId:
+          type: string
+          format: uuid
+        participantUserId:
+          type: string
+          format: uuid
+        projectTitle:
+          type: string
+        projectStatus:
+          type: string
+        currentPhase:
+          type: string
+        workflowState:
+          type: string
+    ProjectDetail:
+      allOf:
+        - $ref: '#/components/schemas/Project'
+        - type: object
+          properties:
+            mentorUserId:
+              type: string
+              format: uuid
+            latestTAIScore:
+              $ref: '#/components/schemas/TAIScore'
+    CreateProjectRequest:
+      type: object
+      required: [cohortId, projectTitle]
+      properties:
+        cohortId:
+          type: string
+          format: uuid
+        projectTitle:
+          type: string
+    CreateArtifactRequest:
+      type: object
+      required: [artifactType, fileName, fileUri]
+      properties:
+        artifactType:
+          type: string
+        fileName:
+          type: string
+        fileUri:
+          type: string
+        mimeType:
+          type: string
+    ProjectArtifact:
+      type: object
+      properties:
+        artifactId:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        artifactType:
+          type: string
+        fileName:
+          type: string
+        fileUri:
+          type: string
+    UpsertProblemStatementRequest:
+      type: object
+      required: [rawProblemText]
+      properties:
+        rawProblemText:
+          type: string
+    ProblemStatement:
+      type: object
+      properties:
+        problemId:
+          type: string
+          format: uuid
+        projectId:
+          type: string
+          format: uuid
+        rawProblemText:
+          type: string
+        reframedProblemText:
+          type: string
+        workflowState:
+          type: string
+        aiConfidenceScore:
+          type: number
+          format: float
+    RunProblemAnalysisRequest:
+      type: object
+      properties:
+        includeCompetencyGap:
+          type: boolean
+          default: true
+    ProblemAnalysisResult:
+      type: object
+      properties:
+        reframedProblemText:
+          type: string
+        rootCauses:
+          type: array
+          items:
+            type: string
+        stakeholders:
+          type: array
+          items:
+            type: string
+        competencyGaps:
+          type: array
+          items:
+            type: string
+        confidenceScore:
+          type: number
+          format: float
+    GenerateDecisionOptionsRequest:
+      type: object
+      properties:
+        optionCount:
+          type: integer
+          minimum: 3
+          maximum: 5
+          default: 3
+    DecisionOption:
+      type: object
+      properties:
+        decisionOptionId:
+          type: string
+          format: uuid
+        optionTitle:
+          type: string
+        optionDescription:
+          type: string
+        benefitScore:
+          type: number
+        riskScore:
+          type: number
+        feasibilityScore:
+          type: number
+        selectedFlag:
+          type: boolean
+    ReviewDecisionRequest:
+      type: object
+      required: [decision]
+      properties:
+        decision:
+          type: string
+          enum: [approved, revision_required]
+        reviewerComment:
+          type: string
+    UpsertImplementationPlanRequest:
+      type: object
+      required: [roadmap]
+      properties:
+        roadmap:
+          type: array
+          items:
+            type: string
+        milestones:
+          type: array
+          items:
+            type: string
+        kpis:
+          type: array
+          items:
+            type: string
+        risks:
+          type: array
+          items:
+            type: string
+    ImplementationPlan:
+      type: object
+      properties:
+        implementationPlanId:
+          type: string
+          format: uuid
+        workflowState:
+          type: string
+        roadmap:
+          type: array
+          items:
+            type: string
+        milestones:
+          type: array
+          items:
+            type: string
+        kpis:
+          type: array
+          items:
+            type: string
+        risks:
+          type: array
+          items:
+            type: string
+    CreateProgressLogRequest:
+      type: object
+      required: [phaseName, progressPercent]
+      properties:
+        phaseName:
+          type: string
+        progressPercent:
+          type: integer
+          minimum: 0
+          maximum: 100
+        statusNote:
+          type: string
+        riskNote:
+          type: string
+    ProgressLog:
+      type: object
+      properties:
+        progressLogId:
+          type: string
+          format: uuid
+        phaseName:
+          type: string
+        progressPercent:
+          type: integer
+        statusNote:
+          type: string
+        riskNote:
+          type: string
+    CreateImpactMetricRequest:
+      type: object
+      required: [metricCode, metricName, actualValue, measurementDate]
+      properties:
+        metricCode:
+          type: string
+        metricName:
+          type: string
+        baselineValue:
+          type: number
+        targetValue:
+          type: number
+        actualValue:
+          type: number
+        unitOfMeasure:
+          type: string
+        measurementDate:
+          type: string
+          format: date
+        evidenceArtifactId:
+          type: string
+          format: uuid
+    ImpactMetric:
+      type: object
+      properties:
+        impactMetricId:
+          type: string
+          format: uuid
+        metricCode:
+          type: string
+        metricName:
+          type: string
+        actualValue:
+          type: number
+        measurementDate:
+          type: string
+          format: date
+    UpsertReflectionRequest:
+      type: object
+      required: [reflectionText]
+      properties:
+        reflectionText:
+          type: string
+    ReflectionJournal:
+      type: object
+      properties:
+        reflectionId:
+          type: string
+          format: uuid
+        reflectionText:
+          type: string
+        workflowState:
+          type: string
+        reflectiveMaturityScore:
+          type: number
+    ReflectionAnalysisResult:
+      type: object
+      properties:
+        summary:
+          type: string
+        biasIndicators:
+          type: array
+          items:
+            type: string
+        growthIndicators:
+          type: array
+          items:
+            type: string
+        confidenceScore:
+          type: number
+          format: float
+    CreateAssessmentRequest:
+      type: object
+      required: [assessmentSource, score]
+      properties:
+        rubricId:
+          type: string
+          format: uuid
+        assessmentSource:
+          type: string
+          enum: [mentor, ai_assist, admin_override]
+        score:
+          type: object
+          additionalProperties: true
+        commentText:
+          type: string
+    AssessmentResult:
+      type: object
+      properties:
+        assessmentResultId:
+          type: string
+          format: uuid
+        rubricId:
+          type: string
+          format: uuid
+        assessmentSource:
+          type: string
+        score:
+          type: object
+          additionalProperties: true
+    TAIScore:
+      type: object
+      properties:
+        taiScoreId:
+          type: string
+          format: uuid
+        problemComplexityScore:
+          type: number
+        decisionQualityScore:
+          type: number
+        impactScore:
+          type: number
+        reflectiveMaturityScore:
+          type: number
+        totalTaiScore:
+          type: number
+        scoreVersion:
+          type: string
+    ParticipantDashboard:
+      type: object
+      properties:
+        activeProjectCount:
+          type: integer
+        currentPhase:
+          type: string
+        latestTaiScore:
+          $ref: '#/components/schemas/TAIScore'
+    MentorDashboard:
+      type: object
+      properties:
+        assignedParticipantCount:
+          type: integer
+        pendingReviewCount:
+          type: integer
+        recentProjectIds:
+          type: array
+          items:
+            type: string
+            format: uuid
+    ExecutiveDashboard:
+      type: object
+      properties:
+        totalPrograms:
+          type: integer
+        totalProjects:
+          type: integer
+        averageTaiScore:
+          type: number
+        implementationRate:
+          type: number
