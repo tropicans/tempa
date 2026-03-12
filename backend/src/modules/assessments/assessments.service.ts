@@ -13,25 +13,25 @@ export class AssessmentsService {
     private readonly auditService: AuditService,
   ) {}
 
-  createAssessment(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async createAssessment(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'assessment', 'create');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
-    const assessment = this.workspaceStoreService.saveAssessment(projectId, body, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
+    const assessment = await this.workspaceStoreService.saveAssessment(projectId, body, user);
     this.auditService.log('create', 'assessment', String(assessment.assessmentResultId));
     return assessment;
   }
 
-  getTaiScore(projectId: string, user: CurrentUser) {
+  async getTaiScore(projectId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'tai_score', 'read');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     return this.workspaceStoreService.getOrCreateTaiScore(projectId);
   }
 
-  publishTaiScore(projectId: string, user: CurrentUser) {
+  async publishTaiScore(projectId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'tai_score', 'publish');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
-    const score = this.workspaceStoreService.getOrCreateTaiScore(projectId);
-    this.workspaceStoreService.closeProject(projectId);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
+    const score = await this.workspaceStoreService.getOrCreateTaiScore(projectId);
+    await this.workspaceStoreService.closeProject(projectId);
     this.auditService.log('publish', 'tai_score', String(score.taiScoreId));
     return score;
   }

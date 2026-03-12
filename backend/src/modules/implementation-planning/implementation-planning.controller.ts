@@ -9,7 +9,7 @@ export class ImplementationPlanningController {
   constructor(private readonly implementationPlanningService: ImplementationPlanningService) {}
 
   @Post('implementation-plan')
-  upsertImplementationPlan(
+  async upsertImplementationPlan(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,
@@ -18,12 +18,12 @@ export class ImplementationPlanningController {
   }
 
   @Post('implementation-plan/submit')
-  submitImplementationPlan(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
+  async submitImplementationPlan(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
     return this.implementationPlanningService.submitImplementationPlan(projectId, user);
   }
 
   @Post('implementation-plan/review')
-  reviewImplementationPlan(
+  async reviewImplementationPlan(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,

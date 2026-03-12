@@ -9,7 +9,7 @@ export class ProblemAnalysisController {
   constructor(private readonly problemAnalysisService: ProblemAnalysisService) {}
 
   @Post('problem-statement')
-  upsertProblemStatement(
+  async upsertProblemStatement(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,
@@ -18,17 +18,17 @@ export class ProblemAnalysisController {
   }
 
   @Post('problem-statement/submit')
-  submitProblemStatement(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
+  async submitProblemStatement(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
     return this.problemAnalysisService.submitProblemStatement(projectId, user);
   }
 
   @Post('problem-analysis:ai')
-  runProblemAnalysis(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
+  async runProblemAnalysis(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
     return this.problemAnalysisService.runProblemAnalysis(projectId, user);
   }
 
   @Post('problem-statement/review')
-  reviewProblemStatement(
+  async reviewProblemStatement(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,

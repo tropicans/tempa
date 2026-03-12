@@ -9,7 +9,7 @@ export class ReflectionsController {
   constructor(private readonly reflectionsService: ReflectionsService) {}
 
   @Post('reflections')
-  upsertReflection(
+  async upsertReflection(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,
@@ -18,12 +18,12 @@ export class ReflectionsController {
   }
 
   @Post('reflections/submit')
-  submitReflection(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
+  async submitReflection(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
     return this.reflectionsService.submitReflection(projectId, user);
   }
 
   @Post('reflection-analysis:ai')
-  runReflectionAnalysis(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
+  async runReflectionAnalysis(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
     return this.reflectionsService.runReflectionAnalysis(projectId, user);
   }
 }

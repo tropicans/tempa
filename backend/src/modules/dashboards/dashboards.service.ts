@@ -11,10 +11,10 @@ export class DashboardsService {
     private readonly workspaceStoreService: WorkspaceStoreService,
   ) {}
 
-  getParticipantDashboard(user: CurrentUser) {
+  async getParticipantDashboard(user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'dashboard', 'participant');
-    this.workspaceStoreService.seedDemoProjectForUser(user);
-    const summary = this.workspaceStoreService.getDashboardSummary(user);
+    await this.workspaceStoreService.seedDemoProjectForUser(user);
+    const summary = await this.workspaceStoreService.getDashboardSummary(user);
     return {
       activeProjectCount: summary.activeProjectCount,
       currentPhase: summary.currentPhase,
@@ -22,19 +22,20 @@ export class DashboardsService {
     };
   }
 
-  getMentorDashboard(user: CurrentUser) {
+  async getMentorDashboard(user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'dashboard', 'mentor');
-    const summary = this.workspaceStoreService.getDashboardSummary(user);
+    const summary = await this.workspaceStoreService.getDashboardSummary(user);
+    const recentProjects = await this.workspaceStoreService.listProjects(user);
     return {
       assignedParticipantCount: summary.assignedParticipantCount,
       pendingReviewCount: summary.pendingReviewCount,
-      recentProjectIds: this.workspaceStoreService.listProjects(user).map((project) => project.projectId).slice(0, 5),
+      recentProjectIds: recentProjects.map((project) => project.projectId).slice(0, 5),
     };
   }
 
-  getExecutiveDashboard(user: CurrentUser) {
+  async getExecutiveDashboard(user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'dashboard', 'executive');
-    const summary = this.workspaceStoreService.getDashboardSummary(user);
+    const summary = await this.workspaceStoreService.getDashboardSummary(user);
     return {
       totalPrograms: summary.totalPrograms,
       totalProjects: summary.totalProjects,

@@ -9,12 +9,12 @@ export class CohortsController {
   constructor(private readonly cohortsService: CohortsService) {}
 
   @Post()
-  createCohort(@Body() body: Record<string, unknown>, @CurrentUserDecorator() user: CurrentUser) {
+  async createCohort(@Body() body: Record<string, unknown>, @CurrentUserDecorator() user: CurrentUser) {
     return this.cohortsService.createCohort(body, user);
   }
 
   @Post(':cohortId/enrollments')
-  createEnrollment(
+  async createEnrollment(
     @Param('cohortId') cohortId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,
@@ -23,7 +23,7 @@ export class CohortsController {
   }
 
   @Post(':cohortId/mentor-assignments')
-  createMentorAssignment(
+  async createMentorAssignment(
     @Param('cohortId') cohortId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,

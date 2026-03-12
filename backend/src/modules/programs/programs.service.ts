@@ -11,17 +11,17 @@ export class ProgramsService {
     private readonly workspaceStoreService: WorkspaceStoreService,
   ) {}
 
-  listPrograms(user: CurrentUser) {
+  async listPrograms(user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'program', 'read');
     return this.workspaceStoreService.listPrograms();
   }
 
-  createProgram(body: Record<string, unknown>, user: CurrentUser) {
+  async createProgram(body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'program', 'create');
     return this.workspaceStoreService.createProgram(body);
   }
 
-  getProgram(programId: string, user: CurrentUser) {
+  async getProgram(programId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'program', 'read');
     return this.workspaceStoreService.getProgram(programId);
   }

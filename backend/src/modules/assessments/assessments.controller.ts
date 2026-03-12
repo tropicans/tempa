@@ -9,7 +9,7 @@ export class AssessmentsController {
   constructor(private readonly assessmentsService: AssessmentsService) {}
 
   @Post('assessments')
-  createAssessment(
+  async createAssessment(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,
@@ -18,12 +18,12 @@ export class AssessmentsController {
   }
 
   @Get('tai-score')
-  getTaiScore(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
+  async getTaiScore(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
     return this.assessmentsService.getTaiScore(projectId, user);
   }
 
   @Post('tai-score')
-  publishTaiScore(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
+  async publishTaiScore(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
     return this.assessmentsService.publishTaiScore(projectId, user);
   }
 }

@@ -1,13 +1,76 @@
+import { revalidatePath } from 'next/cache';
+
 import { AppShell } from '@/components/app-shell';
 import { PageCard } from '@/components/page-card';
 import { StatCard } from '@/components/stat-card';
+import { fetchSessionJson, postSessionJson } from '@/lib/api';
 import { getSessionRole } from '@/lib/session';
 
-export default async function EvaluationReviewPage() {
+type ReflectionData = {
+  reflectionText?: string;
+  aiSummary?: string;
+  workflowState?: string;
+};
+
+type TaiScoreData = {
+  problemComplexityScore?: number;
+  decisionQualityScore?: number;
+  impactScore?: number;
+  reflectiveMaturityScore?: number;
+  totalTaiScore?: number;
+  publishedFlag?: boolean;
+};
+
+type ProjectDetail = {
+  projectId: string;
+  projectTitle: string;
+  currentPhase: string;
+  workflowState: string;
+  participantUserId?: string;
+  reflection?: ReflectionData;
+  taiScore?: TaiScoreData;
+};
+
+export default async function EvaluationReviewPage({
+  params,
+}: {
+  params: Promise<{ projectId: string }>;
+}) {
+  const { projectId } = await params;
   const role = await getSessionRole();
+  const project = await fetchSessionJson<ProjectDetail>(`/projects/${projectId}`);
+  const reflection = project.reflection;
+  const taiScore = project.taiScore;
+
+  async function submitAssessment(formData: FormData) {
+    'use server';
+
+    const problemComplexityScore = Number(formData.get('problemComplexityScore') ?? 0);
+    const decisionQualityScore = Number(formData.get('decisionQualityScore') ?? 0);
+    const impactScore = Number(formData.get('impactScore') ?? 0);
+    const reflectiveMaturityScore = Number(formData.get('reflectiveMaturityScore') ?? 0);
+    const assessorComment = String(formData.get('assessorComment') ?? '').trim();
+
+    await postSessionJson(`/projects/${projectId}/assessments`, {
+      problemComplexityScore,
+      decisionQualityScore,
+      impactScore,
+      reflectiveMaturityScore,
+      assessorComment: assessorComment || undefined,
+    });
+    revalidatePath(`/app/mentor/projects/${projectId}/evaluation-review`);
+  }
+
+  async function publishTai() {
+    'use server';
+
+    await postSessionJson(`/projects/${projectId}/tai-score`);
+    revalidatePath(`/app/mentor/projects/${projectId}/evaluation-review`);
+    revalidatePath('/app/mentor/reviews');
+  }
 
   return (
-    <AppShell title="Evaluation Review" subtitle="Complete assessment and confirm TAI publication readiness." roleLabel={role}>
+    <AppShell title="Evaluation Review" subtitle={`Final assessment and TAI publication for ${project.projectTitle}.`} roleLabel={role}>
       <section className="card hero-panel">
         <div className="hero-copy">
           <div className="section-eyebrow">Final review</div>
@@ -15,26 +78,79 @@ export default async function EvaluationReviewPage() {
           <p className="muted">Di tahap ini mentor menilai kedewasaan refleksi dan kesiapan publikasi skor TAI.</p>
         </div>
         <div className="metric-strip">
-          <StatCard label="Reflection" value="submitted" />
-          <StatCard label="TAI readiness" value="ready" />
+          <StatCard label="Reflection" value={reflection?.workflowState ?? 'pending'} />
+          <StatCard label="TAI Score" value={taiScore?.totalTaiScore ?? '–'} />
+          <StatCard label="Published" value={taiScore?.publishedFlag ? 'Yes' : 'No'} />
         </div>
       </section>
       <div className="grid grid-2">
-        <PageCard eyebrow="Assessment" title="Scoring review" description="Show reflection summary, scoring rubric, and publication controls.">
-          <div className="decision-grid">
-            <div className="decision-box"><strong>Reflection summary</strong><p className="muted">Participant demonstrates stronger diagnosis discipline and implementation awareness.</p></div>
-            <div className="decision-box"><strong>Evidence health</strong><p className="muted">Impact metrics are present, but one KPI still needs stronger evidence linkage.</p></div>
-            <div className="decision-box"><strong>Publication advice</strong><p className="muted">Publish once mentor comments are finalized and rubric scores are locked.</p></div>
+        <PageCard eyebrow="Reflection" title="Participant reflection" description="Review the participant's self-reflection and AI analysis.">
+          <div className="stack">
+            <div>
+              <strong>Reflection</strong>
+              <p className="muted">{reflection?.reflectionText ?? 'No reflection submitted yet.'}</p>
+            </div>
+            {reflection?.aiSummary && (
+              <div className="signal-box">
+                <strong>AI summary</strong>
+                <p>{reflection.aiSummary}</p>
+              </div>
+            )}
           </div>
         </PageCard>
-        <PageCard eyebrow="Control" title="Publication prompts" description="Use these checks before confirming the final score.">
-          <div className="journey-list">
-            <div className="journey-step"><strong>1</strong><div><b>Reflection is specific and honest</b></div></div>
-            <div className="journey-step"><strong>2</strong><div><b>Evidence supports the impact claim</b></div></div>
-            <div className="journey-step"><strong>3</strong><div><b>Score can be defended in audit</b></div></div>
-          </div>
+        <PageCard eyebrow="Assessment" title="Score dimensions" description="Enter scores for each TAI dimension (0–25 each).">
+          <form action={submitAssessment} className="stack">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <label className="field">
+                <span>Problem Complexity</span>
+                <input name="problemComplexityScore" type="number" min={0} max={25} defaultValue={taiScore?.problemComplexityScore ?? 0} />
+              </label>
+              <label className="field">
+                <span>Decision Quality</span>
+                <input name="decisionQualityScore" type="number" min={0} max={25} defaultValue={taiScore?.decisionQualityScore ?? 0} />
+              </label>
+              <label className="field">
+                <span>Impact</span>
+                <input name="impactScore" type="number" min={0} max={25} defaultValue={taiScore?.impactScore ?? 0} />
+              </label>
+              <label className="field">
+                <span>Reflective Maturity</span>
+                <input name="reflectiveMaturityScore" type="number" min={0} max={25} defaultValue={taiScore?.reflectiveMaturityScore ?? 0} />
+              </label>
+            </div>
+            <label className="field">
+              <span>Assessor comment</span>
+              <textarea name="assessorComment" rows={3} placeholder="Overall assessment and recommendation…" />
+            </label>
+            <div className="actions">
+              <button className="button" type="submit">Save assessment</button>
+            </div>
+          </form>
         </PageCard>
       </div>
+      {taiScore && (
+        <PageCard eyebrow="Publish" title="TAI publication" description="Finalize the score and make it visible to the participant and program admin.">
+          <div className="stack">
+            <div className="metric-strip">
+              <div className="metric-card"><div className="metric-label">Problem Complexity</div><div className="metric-value">{taiScore.problemComplexityScore ?? 0}</div></div>
+              <div className="metric-card"><div className="metric-label">Decision Quality</div><div className="metric-value">{taiScore.decisionQualityScore ?? 0}</div></div>
+              <div className="metric-card"><div className="metric-label">Impact</div><div className="metric-value">{taiScore.impactScore ?? 0}</div></div>
+              <div className="metric-card"><div className="metric-label">Reflective Maturity</div><div className="metric-value">{taiScore.reflectiveMaturityScore ?? 0}</div></div>
+            </div>
+            <div className="signal-box" style={{ textAlign: 'center' }}>
+              <strong style={{ fontSize: '1.5rem' }}>Total TAI: {taiScore.totalTaiScore ?? 0}</strong>
+              {taiScore.publishedFlag && <p className="muted">✓ Already published</p>}
+            </div>
+            {!taiScore.publishedFlag && (
+              <form action={publishTai}>
+                <div className="actions" style={{ justifyContent: 'center' }}>
+                  <button className="button" type="submit">Publish TAI Score</button>
+                </div>
+              </form>
+            )}
+          </div>
+        </PageCard>
+      )}
     </AppShell>
   );
 }

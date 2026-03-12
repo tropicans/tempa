@@ -1,0 +1,551 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StatusCode {
+  active
+  inactive
+  draft
+  archived
+}
+
+enum WorkflowState {
+  draft
+  submitted
+  under_review
+  revision_required
+  approved
+  in_implementation
+  evaluated
+  closed
+}
+
+enum ProjectPhase {
+  analysis
+  design
+  development
+  implementation
+  evaluation
+}
+
+enum AssessmentSourceType {
+  mentor
+  ai_assist
+  admin_override
+}
+
+enum ReviewDecisionType {
+  approved
+  revision_required
+}
+
+enum DataClassification {
+  public
+  internal
+  restricted
+  sensitive
+}
+
+model Tenant {
+  tenantId   String     @id @default(uuid()) @map("tenant_id") @db.Uuid
+  tenantCode String     @unique @map("tenant_code")
+  tenantName String     @map("tenant_name")
+  tenantType String     @map("tenant_type")
+  status     StatusCode @default(active) @map("status")
+  createdAt  DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime   @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  institutions     Institution[]
+  userAccounts     UserAccount[]
+  programs         Program[]
+  assessmentRubric AssessmentRubric[]
+  aiInteractionLog AiInteractionLog[]
+  auditLog         AuditLog[]
+  systemConfig     SystemConfig[]
+  Project          Project[]
+
+  @@map("tenant")
+}
+
+model Institution {
+  institutionId   String     @id @default(uuid()) @map("institution_id") @db.Uuid
+  tenantId        String     @map("tenant_id") @db.Uuid
+  institutionName String     @map("institution_name")
+  institutionType String?    @map("institution_type")
+  regionCode      String?    @map("region_code")
+  status          StatusCode @default(active) @map("status")
+  createdAt       DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime   @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  tenant Tenant        @relation(fields: [tenantId], references: [tenantId])
+  users  UserAccount[]
+
+  @@index([tenantId], map: "idx_institution_tenant_id")
+  @@map("institution")
+}
+
+model UserAccount {
+  userId             String     @id @default(uuid()) @map("user_id") @db.Uuid
+  tenantId           String     @map("tenant_id") @db.Uuid
+  institutionId      String?    @map("institution_id") @db.Uuid
+  externalIdentityId String?    @map("external_identity_id")
+  fullName           String     @map("full_name")
+  email              String     @map("email")
+  phone              String?    @map("phone")
+  jobTitle           String?    @map("job_title")
+  gradeLevel         String?    @map("grade_level")
+  status             StatusCode @default(active) @map("status")
+  lastLoginAt        DateTime?  @map("last_login_at") @db.Timestamptz(6)
+  createdAt          DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime   @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  tenant                         Tenant               @relation(fields: [tenantId], references: [tenantId])
+  institution                    Institution?         @relation(fields: [institutionId], references: [institutionId])
+  roles                          UserRole[]
+  createdPrograms                Program[]            @relation("ProgramCreatedBy")
+  participantProjects            Project[]            @relation("ParticipantProjects")
+  mentorProjects                 Project[]            @relation("MentorProjects")
+  mentorAssignmentsAsMentor      MentorAssignment[]   @relation("MentorAssignmentMentor")
+  mentorAssignmentsAsParticipant MentorAssignment[]   @relation("MentorAssignmentParticipant")
+  progressLogs                   ProgressLog[]        @relation("ProgressLogUser")
+  assessments                    AssessmentResult[]   @relation("AssessmentAssessor")
+  taiScores                      TaiScore[]           @relation("TaiScoreCalculatedBy")
+  auditLogs                      AuditLog[]           @relation("AuditActor")
+  CohortParticipant              CohortParticipant[]
+  ProblemStatement               ProblemStatement[]
+  ImplementationPlan             ImplementationPlan[]
+  AiInteractionLog               AiInteractionLog[]
+
+  @@unique([tenantId, email], map: "user_account_tenant_id_email_key")
+  @@unique([tenantId, externalIdentityId], map: "user_account_tenant_id_external_id_key")
+  @@index([tenantId], map: "idx_user_account_tenant_id")
+  @@index([institutionId], map: "idx_user_account_institution_id")
+  @@map("user_account")
+}
+
+model Role {
+  roleId      String     @id @default(uuid()) @map("role_id") @db.Uuid
+  roleCode    String     @unique @map("role_code")
+  roleName    String     @map("role_name")
+  description String?    @map("description")
+  userRoles   UserRole[]
+
+  @@map("role")
+}
+
+model UserRole {
+  userRoleId String   @id @default(uuid()) @map("user_role_id") @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  roleId     String   @map("role_id") @db.Uuid
+  scopeType  String   @map("scope_type")
+  scopeId    String?  @map("scope_id") @db.Uuid
+  assignedAt DateTime @default(now()) @map("assigned_at") @db.Timestamptz(6)
+
+  user UserAccount @relation(fields: [userId], references: [userId])
+  role Role        @relation(fields: [roleId], references: [roleId])
+
+  @@unique([userId, roleId, scopeType, scopeId], map: "user_role_user_id_role_id_scope_type_scope_id_key")
+  @@map("user_role")
+}
+
+model Program {
+  programId   String     @id @default(uuid()) @map("program_id") @db.Uuid
+  tenantId    String     @map("tenant_id") @db.Uuid
+  programCode String     @map("program_code")
+  programName String     @map("program_name")
+  description String?    @map("description")
+  startDate   DateTime?  @map("start_date") @db.Date
+  endDate     DateTime?  @map("end_date") @db.Date
+  status      StatusCode @default(draft) @map("status")
+  createdById String?    @map("created_by") @db.Uuid
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime   @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  tenant    Tenant       @relation(fields: [tenantId], references: [tenantId])
+  createdBy UserAccount? @relation("ProgramCreatedBy", fields: [createdById], references: [userId])
+  cohorts   Cohort[]
+
+  @@unique([tenantId, programCode], map: "program_tenant_id_program_code_key")
+  @@index([tenantId], map: "idx_program_tenant_id")
+  @@map("program")
+}
+
+model Cohort {
+  cohortId    String     @id @default(uuid()) @map("cohort_id") @db.Uuid
+  programId   String     @map("program_id") @db.Uuid
+  cohortName  String     @map("cohort_name")
+  phaseConfig Json       @default("{}") @map("phase_config_json")
+  startDate   DateTime?  @map("start_date") @db.Date
+  endDate     DateTime?  @map("end_date") @db.Date
+  status      StatusCode @default(draft) @map("status")
+  createdAt   DateTime   @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime   @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  program           Program             @relation(fields: [programId], references: [programId])
+  participants      CohortParticipant[]
+  mentorAssignments MentorAssignment[]
+  projects          Project[]
+
+  @@unique([programId, cohortName], map: "cohort_program_id_cohort_name_key")
+  @@index([programId], map: "idx_cohort_program_id")
+  @@map("cohort")
+}
+
+model CohortParticipant {
+  cohortParticipantId String     @id @default(uuid()) @map("cohort_participant_id") @db.Uuid
+  cohortId            String     @map("cohort_id") @db.Uuid
+  userId              String     @map("user_id") @db.Uuid
+  enrollmentStatus    StatusCode @default(active) @map("enrollment_status")
+  enrolledAt          DateTime   @default(now()) @map("enrolled_at") @db.Timestamptz(6)
+
+  cohort Cohort      @relation(fields: [cohortId], references: [cohortId])
+  user   UserAccount @relation(fields: [userId], references: [userId])
+
+  @@unique([cohortId, userId], map: "cohort_participant_cohort_id_user_id_key")
+  @@index([cohortId], map: "idx_cohort_participant_cohort_id")
+  @@index([userId], map: "idx_cohort_participant_user_id")
+  @@map("cohort_participant")
+}
+
+model MentorAssignment {
+  mentorAssignmentId String   @id @default(uuid()) @map("mentor_assignment_id") @db.Uuid
+  cohortId           String   @map("cohort_id") @db.Uuid
+  mentorUserId       String   @map("mentor_user_id") @db.Uuid
+  participantUserId  String   @map("participant_user_id") @db.Uuid
+  assignedAt         DateTime @default(now()) @map("assigned_at") @db.Timestamptz(6)
+  activeFlag         Boolean  @default(true) @map("active_flag")
+
+  cohort      Cohort      @relation(fields: [cohortId], references: [cohortId])
+  mentor      UserAccount @relation("MentorAssignmentMentor", fields: [mentorUserId], references: [userId])
+  participant UserAccount @relation("MentorAssignmentParticipant", fields: [participantUserId], references: [userId])
+
+  @@unique([cohortId, mentorUserId, participantUserId], map: "mentor_assignment_uc")
+  @@index([cohortId], map: "idx_mentor_assignment_cohort_id")
+  @@map("mentor_assignment")
+}
+
+model Project {
+  projectId         String        @id @default(uuid()) @map("project_id") @db.Uuid
+  tenantId          String        @map("tenant_id") @db.Uuid
+  cohortId          String        @map("cohort_id") @db.Uuid
+  participantUserId String        @map("participant_user_id") @db.Uuid
+  mentorUserId      String?       @map("mentor_user_id") @db.Uuid
+  projectCode       String?       @map("project_code")
+  projectTitle      String        @map("project_title")
+  projectStatus     StatusCode    @default(draft) @map("project_status")
+  currentPhase      ProjectPhase  @default(analysis) @map("current_phase")
+  workflowState     WorkflowState @default(draft) @map("workflow_state")
+  startedAt         DateTime?     @map("started_at") @db.Timestamptz(6)
+  completedAt       DateTime?     @map("completed_at") @db.Timestamptz(6)
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  tenant              Tenant               @relation(fields: [tenantId], references: [tenantId])
+  cohort              Cohort               @relation(fields: [cohortId], references: [cohortId])
+  participant         UserAccount          @relation("ParticipantProjects", fields: [participantUserId], references: [userId])
+  mentor              UserAccount?         @relation("MentorProjects", fields: [mentorUserId], references: [userId])
+  artifacts           ProjectArtifact[]
+  progressLogs        ProgressLog[]
+  problemStatements   ProblemStatement[]
+  decisionOptions     DecisionOption[]
+  scenarioSimulations ScenarioSimulation[]
+  implementationPlans ImplementationPlan[]
+  impactMetrics       ImpactMetric[]
+  reflections         ReflectionJournal[]
+  assessments         AssessmentResult[]
+  taiScores           TaiScore[]
+  AiInteractionLog    AiInteractionLog[]
+
+  @@index([cohortId], map: "idx_project_cohort_id")
+  @@index([participantUserId], map: "idx_project_participant_user_id")
+  @@index([mentorUserId], map: "idx_project_mentor_user_id")
+  @@index([currentPhase, workflowState, projectStatus], map: "idx_project_phase_state_status")
+  @@map("project")
+}
+
+model ProjectArtifact {
+  artifactId     String             @id @default(uuid()) @map("artifact_id") @db.Uuid
+  projectId      String             @map("project_id") @db.Uuid
+  artifactType   String             @map("artifact_type")
+  fileUri        String             @map("file_uri")
+  fileName       String             @map("file_name")
+  mimeType       String?            @map("mime_type")
+  classification DataClassification @default(internal) @map("classification_level")
+  versionNo      Int                @default(1) @map("version_no")
+  uploadedBy     String?            @map("uploaded_by") @db.Uuid
+  uploadedAt     DateTime           @default(now()) @map("uploaded_at") @db.Timestamptz(6)
+
+  project      Project        @relation(fields: [projectId], references: [projectId])
+  ImpactMetric ImpactMetric[]
+
+  @@index([projectId], map: "idx_project_artifact_project_id")
+  @@map("project_artifact")
+}
+
+model ProgressLog {
+  progressLogId   String       @id @default(uuid()) @map("progress_log_id") @db.Uuid
+  projectId       String       @map("project_id") @db.Uuid
+  phaseName       ProjectPhase @map("phase_name")
+  progressPercent Int          @map("progress_percent")
+  statusNote      String?      @map("status_note")
+  riskNote        String?      @map("risk_note")
+  loggedById      String?      @map("logged_by") @db.Uuid
+  loggedAt        DateTime     @default(now()) @map("logged_at") @db.Timestamptz(6)
+
+  project  Project      @relation(fields: [projectId], references: [projectId])
+  loggedBy UserAccount? @relation("ProgressLogUser", fields: [loggedById], references: [userId])
+
+  @@index([projectId], map: "idx_progress_log_project_id")
+  @@map("progress_log")
+}
+
+model ProblemStatement {
+  problemId           String        @id @default(uuid()) @map("problem_id") @db.Uuid
+  projectId           String        @map("project_id") @db.Uuid
+  versionNo           Int           @default(1) @map("version_no")
+  rawProblemText      String        @map("raw_problem_text")
+  reframedProblemText String?       @map("reframed_problem_text")
+  rootCauseJson       Json          @default("[]") @map("root_cause_json")
+  stakeholderMapJson  Json          @default("[]") @map("stakeholder_map_json")
+  competencyGapJson   Json          @default("[]") @map("competency_gap_json")
+  workflowState       WorkflowState @default(draft) @map("workflow_state")
+  aiConfidenceScore   Decimal?      @map("ai_confidence_score") @db.Decimal(10, 4)
+  approvedById        String?       @map("approved_by") @db.Uuid
+  approvedAt          DateTime?     @map("approved_at") @db.Timestamptz(6)
+  reviewFeedback      Json          @default("{}") @map("review_feedback_json")
+  createdAt           DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  project    Project      @relation(fields: [projectId], references: [projectId])
+  approvedBy UserAccount? @relation(fields: [approvedById], references: [userId])
+
+  @@unique([projectId, versionNo], map: "problem_statement_project_id_version_no_key")
+  @@index([projectId], map: "idx_problem_statement_project_id")
+  @@map("problem_statement")
+}
+
+model DecisionOption {
+  decisionOptionId  String   @id @default(uuid()) @map("decision_option_id") @db.Uuid
+  projectId         String   @map("project_id") @db.Uuid
+  optionRank        Int?     @map("option_rank")
+  optionTitle       String   @map("option_title")
+  optionDescription String   @map("option_description")
+  benefitScore      Decimal? @map("benefit_score") @db.Decimal(18, 2)
+  riskScore         Decimal? @map("risk_score") @db.Decimal(18, 2)
+  feasibilityScore  Decimal? @map("feasibility_score") @db.Decimal(18, 2)
+  selectedFlag      Boolean  @default(false) @map("selected_flag")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  project   Project              @relation(fields: [projectId], references: [projectId])
+  scenarios ScenarioSimulation[]
+
+  @@index([projectId], map: "idx_decision_option_project_id")
+  @@map("decision_option")
+}
+
+model ScenarioSimulation {
+  scenarioId       String   @id @default(uuid()) @map("scenario_id") @db.Uuid
+  projectId        String   @map("project_id") @db.Uuid
+  decisionOptionId String   @map("decision_option_id") @db.Uuid
+  scenarioName     String   @map("scenario_name")
+  inputAssumption  Json     @default("{}") @map("input_assumption_json")
+  outputSummary    String?  @map("output_summary")
+  riskTradeoff     Json     @default("{}") @map("risk_tradeoff_json")
+  simulationScore  Decimal? @map("simulation_score") @db.Decimal(18, 2)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  project        Project        @relation(fields: [projectId], references: [projectId])
+  decisionOption DecisionOption @relation(fields: [decisionOptionId], references: [decisionOptionId])
+
+  @@index([projectId], map: "idx_scenario_simulation_project_id")
+  @@map("scenario_simulation")
+}
+
+model ImplementationPlan {
+  implementationPlanId String              @id @default(uuid()) @map("implementation_plan_id") @db.Uuid
+  projectId            String              @map("project_id") @db.Uuid
+  versionNo            Int                 @default(1) @map("version_no")
+  roadmapJson          Json                @default("[]") @map("roadmap_json")
+  milestoneJson        Json                @default("[]") @map("milestone_json")
+  kpiJson              Json                @default("[]") @map("kpi_json")
+  riskRegisterJson     Json                @default("[]") @map("risk_register_json")
+  policyBriefUri       String?             @map("policy_brief_uri")
+  workflowState        WorkflowState       @default(draft) @map("workflow_state")
+  approvalStatus       ReviewDecisionType? @map("approval_status")
+  approvedById         String?             @map("approved_by") @db.Uuid
+  approvedAt           DateTime?           @map("approved_at") @db.Timestamptz(6)
+  reviewFeedback       Json                @default("{}") @map("review_feedback_json")
+  createdAt            DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  project    Project      @relation(fields: [projectId], references: [projectId])
+  approvedBy UserAccount? @relation(fields: [approvedById], references: [userId])
+
+  @@unique([projectId, versionNo], map: "implementation_plan_project_id_version_no_key")
+  @@index([projectId], map: "idx_implementation_plan_project_id")
+  @@map("implementation_plan")
+}
+
+model ImpactMetric {
+  impactMetricId     String   @id @default(uuid()) @map("impact_metric_id") @db.Uuid
+  projectId          String   @map("project_id") @db.Uuid
+  metricCode         String   @map("metric_code")
+  metricName         String   @map("metric_name")
+  baselineValue      Decimal? @map("baseline_value") @db.Decimal(18, 4)
+  targetValue        Decimal? @map("target_value") @db.Decimal(18, 4)
+  actualValue        Decimal  @map("actual_value") @db.Decimal(18, 4)
+  unitOfMeasure      String?  @map("unit_of_measure")
+  measurementDate    DateTime @map("measurement_date") @db.Date
+  evidenceArtifactId String?  @map("evidence_artifact_id") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  project  Project          @relation(fields: [projectId], references: [projectId])
+  evidence ProjectArtifact? @relation(fields: [evidenceArtifactId], references: [artifactId])
+
+  @@index([projectId], map: "idx_impact_metric_project_id")
+  @@map("impact_metric")
+}
+
+model ReflectionJournal {
+  reflectionId            String        @id @default(uuid()) @map("reflection_id") @db.Uuid
+  projectId               String        @map("project_id") @db.Uuid
+  versionNo               Int           @default(1) @map("version_no")
+  reflectionText          String        @map("reflection_text")
+  aiSummary               String?       @map("ai_summary")
+  biasIndicatorJson       Json          @default("[]") @map("bias_indicator_json")
+  growthIndicatorJson     Json          @default("[]") @map("growth_indicator_json")
+  reflectiveMaturityScore Decimal?      @map("reflective_maturity_score") @db.Decimal(18, 2)
+  workflowState           WorkflowState @default(draft) @map("workflow_state")
+  submittedAt             DateTime?     @map("submitted_at") @db.Timestamptz(6)
+  createdAt               DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime      @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  project Project @relation(fields: [projectId], references: [projectId])
+
+  @@unique([projectId, versionNo], map: "reflection_journal_project_id_version_no_key")
+  @@index([projectId], map: "idx_reflection_journal_project_id")
+  @@map("reflection_journal")
+}
+
+model AssessmentRubric {
+  rubricId         String   @id @default(uuid()) @map("rubric_id") @db.Uuid
+  tenantId         String   @map("tenant_id") @db.Uuid
+  rubricCode       String   @map("rubric_code")
+  rubricName       String   @map("rubric_name")
+  rubricType       String   @map("rubric_type")
+  rubricDefinition Json     @default("{}") @map("rubric_definition_json")
+  versionNo        Int      @default(1) @map("version_no")
+  activeFlag       Boolean  @default(true) @map("active_flag")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  tenant      Tenant             @relation(fields: [tenantId], references: [tenantId])
+  assessments AssessmentResult[]
+
+  @@unique([tenantId, rubricCode, versionNo], map: "assessment_rubric_tenant_id_rubric_code_version_no_key")
+  @@map("assessment_rubric")
+}
+
+model AssessmentResult {
+  assessmentResultId String               @id @default(uuid()) @map("assessment_result_id") @db.Uuid
+  projectId          String               @map("project_id") @db.Uuid
+  rubricId           String               @map("rubric_id") @db.Uuid
+  assessorUserId     String?              @map("assessor_user_id") @db.Uuid
+  assessmentSource   AssessmentSourceType @map("assessment_source")
+  scoreJson          Json                 @default("{}") @map("score_json")
+  commentText        String?              @map("comment_text")
+  submittedAt        DateTime             @default(now()) @map("submitted_at") @db.Timestamptz(6)
+
+  project  Project          @relation(fields: [projectId], references: [projectId])
+  rubric   AssessmentRubric @relation(fields: [rubricId], references: [rubricId])
+  assessor UserAccount?     @relation("AssessmentAssessor", fields: [assessorUserId], references: [userId])
+
+  @@index([projectId], map: "idx_assessment_result_project_id")
+  @@map("assessment_result")
+}
+
+model TaiScore {
+  taiScoreId              String   @id @default(uuid()) @map("tai_score_id") @db.Uuid
+  projectId               String   @map("project_id") @db.Uuid
+  problemComplexityScore  Decimal  @default(0) @map("problem_complexity_score") @db.Decimal(18, 2)
+  decisionQualityScore    Decimal  @default(0) @map("decision_quality_score") @db.Decimal(18, 2)
+  impactScore             Decimal  @default(0) @map("impact_score") @db.Decimal(18, 2)
+  reflectiveMaturityScore Decimal  @default(0) @map("reflective_maturity_score") @db.Decimal(18, 2)
+  totalTaiScore           Decimal  @default(0) @map("total_tai_score") @db.Decimal(18, 2)
+  scoreVersion            String   @map("score_version")
+  publishedFlag           Boolean  @default(false) @map("published_flag")
+  calculatedAt            DateTime @default(now()) @map("calculated_at") @db.Timestamptz(6)
+  calculatedById          String?  @map("calculated_by") @db.Uuid
+
+  project      Project      @relation(fields: [projectId], references: [projectId])
+  calculatedBy UserAccount? @relation("TaiScoreCalculatedBy", fields: [calculatedById], references: [userId])
+
+  @@index([projectId], map: "idx_tai_score_project_id")
+  @@map("tai_score")
+}
+
+model AiInteractionLog {
+  aiLogId         String        @id @default(uuid()) @map("ai_log_id") @db.Uuid
+  tenantId        String        @map("tenant_id") @db.Uuid
+  projectId       String?       @map("project_id") @db.Uuid
+  userId          String?       @map("user_id") @db.Uuid
+  phaseName       ProjectPhase? @map("phase_name")
+  promptTemplate  String        @map("prompt_template_code")
+  modelName       String        @map("model_name")
+  inputHash       String?       @map("input_hash")
+  outputHash      String?       @map("output_hash")
+  confidenceScore Decimal?      @map("confidence_score") @db.Decimal(10, 4)
+  latencyMs       Int?          @map("latency_ms")
+  tokenUsageIn    Int?          @map("token_usage_in")
+  tokenUsageOut   Int?          @map("token_usage_out")
+  createdAt       DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  tenant  Tenant       @relation(fields: [tenantId], references: [tenantId])
+  project Project?     @relation(fields: [projectId], references: [projectId])
+  user    UserAccount? @relation(fields: [userId], references: [userId])
+
+  @@index([projectId], map: "idx_ai_interaction_log_project_id")
+  @@index([createdAt], map: "idx_ai_interaction_log_created_at")
+  @@map("ai_interaction_log")
+}
+
+model AuditLog {
+  auditLogId    String         @id @default(uuid()) @map("audit_log_id") @db.Uuid
+  tenantId      String         @map("tenant_id") @db.Uuid
+  actorUserId   String?        @map("actor_user_id") @db.Uuid
+  actionType    String         @map("action_type")
+  targetType    String         @map("target_type")
+  targetId      String?        @map("target_id") @db.Uuid
+  previousState WorkflowState? @map("previous_state")
+  newState      WorkflowState? @map("new_state")
+  actionDetail  Json           @default("{}") @map("action_detail_json")
+  ipAddress     String?        @map("ip_address")
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  tenant Tenant       @relation(fields: [tenantId], references: [tenantId])
+  actor  UserAccount? @relation("AuditActor", fields: [actorUserId], references: [userId])
+
+  @@index([targetType, targetId], map: "idx_audit_log_target")
+  @@index([createdAt], map: "idx_audit_log_created_at")
+  @@map("audit_log")
+}
+
+model SystemConfig {
+  configId    String   @id @default(uuid()) @map("config_id") @db.Uuid
+  tenantId    String   @map("tenant_id") @db.Uuid
+  configKey   String   @map("config_key")
+  configValue Json     @default("{}") @map("config_value_json")
+  versionNo   Int      @default(1) @map("version_no")
+  activeFlag  Boolean  @default(true) @map("active_flag")
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  tenant Tenant @relation(fields: [tenantId], references: [tenantId])
+
+  @@unique([tenantId, configKey, versionNo], map: "system_config_tenant_id_config_key_version_no_key")
+  @@map("system_config")
+}

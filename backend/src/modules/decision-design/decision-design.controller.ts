@@ -9,12 +9,13 @@ export class DecisionDesignController {
   constructor(private readonly decisionDesignService: DecisionDesignService) {}
 
   @Post('decision-options:ai')
-  generateDecisionOptions(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
-    return { items: this.decisionDesignService.generateDecisionOptions(projectId, user) };
+  async generateDecisionOptions(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
+    const items = await this.decisionDesignService.generateDecisionOptions(projectId, user);
+    return { items };
   }
 
   @Post('decision-options/:decisionOptionId/select')
-  selectDecisionOption(
+  async selectDecisionOption(
     @Param('projectId') projectId: string,
     @Param('decisionOptionId') decisionOptionId: string,
     @CurrentUserDecorator() user: CurrentUser,
@@ -23,7 +24,7 @@ export class DecisionDesignController {
   }
 
   @Post('decision-options/review')
-  reviewDecisionPackage(
+  async reviewDecisionPackage(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,

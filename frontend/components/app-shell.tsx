@@ -20,12 +20,16 @@ export function AppShell({ title, subtitle, roleLabel, children }: AppShellProps
           <h1 className="hero-title">{title}</h1>
           {subtitle ? <p className="muted">{subtitle}</p> : null}
         </div>
+        {/* Use <a> tags (not <Link>) for route handlers to prevent Next.js prefetch
+            which would trigger the route handler and corrupt session cookies */}
         <nav>
           <ul className="quick-list">
-            <li><Link href="/login/as/participant">Participant</Link></li>
-            <li><Link href="/login/as/mentor">Mentor</Link></li>
-            <li><Link href="/login/as/program_admin">Admin</Link></li>
-            <li><Link href="/login/as/executive_viewer">Executive</Link></li>
+            <li><a href="/login/as/participant">Participant</a></li>
+            <li><a href="/login/as/mentor">Mentor</a></li>
+            <li><a href="/login/as/program_admin">Admin</a></li>
+            <li><a href="/login/as/executive_viewer">Executive</a></li>
+            <li style={{ opacity: 0.5 }}>|</li>
+            <li><a href="/logout">Logout</a></li>
           </ul>
         </nav>
       </header>

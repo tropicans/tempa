@@ -11,25 +11,25 @@ export class ProjectsService {
     private readonly workspaceStoreService: WorkspaceStoreService,
   ) {}
 
-  listProjects(user: CurrentUser) {
+  async listProjects(user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'project', 'read');
-    this.workspaceStoreService.seedDemoProjectForUser(user);
+    await this.workspaceStoreService.seedDemoProjectForUser(user);
     return this.workspaceStoreService.listProjects(user);
   }
 
-  createProject(body: Record<string, unknown>, user: CurrentUser) {
+  async createProject(body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'project', 'create');
     return this.workspaceStoreService.createProject(body, user);
   }
 
-  getProject(projectId: string, user: CurrentUser) {
+  async getProject(projectId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'project', 'read');
     return this.workspaceStoreService.assertProjectAccess(projectId, user);
   }
 
-  createArtifact(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async createArtifact(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'artifact', 'create');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     return this.workspaceStoreService.createArtifact(projectId, body, user);
   }
 }

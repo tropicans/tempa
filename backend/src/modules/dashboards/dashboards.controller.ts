@@ -9,17 +9,17 @@ export class DashboardsController {
   constructor(private readonly dashboardsService: DashboardsService) {}
 
   @Get('participant')
-  getParticipantDashboard(@CurrentUserDecorator() user: CurrentUser) {
+  async getParticipantDashboard(@CurrentUserDecorator() user: CurrentUser) {
     return this.dashboardsService.getParticipantDashboard(user);
   }
 
   @Get('mentor')
-  getMentorDashboard(@CurrentUserDecorator() user: CurrentUser) {
+  async getMentorDashboard(@CurrentUserDecorator() user: CurrentUser) {
     return this.dashboardsService.getMentorDashboard(user);
   }
 
   @Get('executive')
-  getExecutiveDashboard(@CurrentUserDecorator() user: CurrentUser) {
+  async getExecutiveDashboard(@CurrentUserDecorator() user: CurrentUser) {
     return this.dashboardsService.getExecutiveDashboard(user);
   }
 }

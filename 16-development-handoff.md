@@ -99,14 +99,14 @@ The role is currently stored in a cookie for fast UI testing.
 - role-based route protection exists,
 - participant project list and analysis flow call backend endpoints,
 - mentor review pages are designed and scaffolded,
-- basic backend authorization and workflow guards exist.
+- basic backend authorization and workflow guards exist,
+- backend persistence is backed by PostgreSQL via Prisma ORM,
+- seed data includes roles, demo users, enrollments, and mentor assignments.
 
 ### Still Placeholder
-- backend persistence is still in-memory,
-- no real database connection yet,
 - no real SSO yet,
 - most mentor/admin/executive pages still use mocked content,
-- no full CRUD repositories or ORM layer yet.
+- no full CRUD repositories or ORM layer yet (workspace-store handles all persistence via Prisma).
 
 ## Recommended Next Development Order
 

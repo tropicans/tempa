@@ -13,6 +13,7 @@ import { ProgramsModule } from './modules/programs/programs.module';
 import { ProjectsModule } from './modules/projects/projects.module';
 import { AssessmentsModule } from './modules/assessments/assessments.module';
 import { ReflectionsModule } from './modules/reflections/reflections.module';
+import { HealthModule } from './modules/health/health.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ReflectionsModule } from './modules/reflections/reflections.module';
     ReflectionsModule,
     AssessmentsModule,
     DashboardsModule,
+    HealthModule,
   ],
 })
 export class AppModule {}

@@ -15,28 +15,28 @@ export class ProblemAnalysisService {
     private readonly auditService: AuditService,
   ) {}
 
-  upsertProblemStatement(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async upsertProblemStatement(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'problem_statement', 'create');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     return this.workspaceStoreService.upsertProblemStatement(projectId, body);
   }
 
-  submitProblemStatement(projectId: string, user: CurrentUser) {
+  async submitProblemStatement(projectId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'problem_statement', 'submit');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
-    const problemStatement = this.workspaceStoreService.getProblemStatement(projectId);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
+    const problemStatement = await this.workspaceStoreService.getProblemStatement(projectId);
     if (!problemStatement) {
       throw new BadRequestException('Problem statement draft is required before submission');
     }
     this.workflowStateService.assertTransition(problemStatement.workflowState as WorkflowState, 'submitted');
-    const updated = this.workspaceStoreService.updateProblemState(projectId, 'submitted');
+    const updated = await this.workspaceStoreService.updateProblemState(projectId, 'submitted');
     this.auditService.log('submit', 'problem_statement', String(updated.problemId));
     return updated;
   }
 
-  runProblemAnalysis(projectId: string, user: CurrentUser) {
+  async runProblemAnalysis(projectId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'problem_statement', 'create');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     return this.workspaceStoreService.updateProblemState(projectId, 'draft', {
       projectId,
       reframedProblemText: 'AI-generated reframed problem statement.',
@@ -46,17 +46,17 @@ export class ProblemAnalysisService {
     });
   }
 
-  reviewProblemStatement(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async reviewProblemStatement(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'problem_statement', 'review');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
-    const problemStatement = this.workspaceStoreService.getProblemStatement(projectId);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
+    const problemStatement = await this.workspaceStoreService.getProblemStatement(projectId);
     if (!problemStatement) {
       throw new BadRequestException('Problem statement does not exist');
     }
     const decision: WorkflowState = body.decision === 'approved' ? 'approved' : 'revision_required';
     const currentState: WorkflowState = problemStatement.workflowState === 'submitted' ? 'under_review' : (problemStatement.workflowState as WorkflowState);
     this.workflowStateService.assertTransition(currentState, decision);
-    const updated = this.workspaceStoreService.updateProblemState(projectId, decision, {
+    const updated = await this.workspaceStoreService.updateProblemState(projectId, decision, {
       reviewerComment: body.reviewerComment,
       reviewedBy: user.userId,
     });

@@ -9,22 +9,23 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) {}
 
   @Get()
-  listProjects(@CurrentUserDecorator() user: CurrentUser) {
-    return { items: this.projectsService.listProjects(user) };
+  async listProjects(@CurrentUserDecorator() user: CurrentUser) {
+    const items = await this.projectsService.listProjects(user);
+    return { items };
   }
 
   @Post()
-  createProject(@Body() body: Record<string, unknown>, @CurrentUserDecorator() user: CurrentUser) {
+  async createProject(@Body() body: Record<string, unknown>, @CurrentUserDecorator() user: CurrentUser) {
     return this.projectsService.createProject(body, user);
   }
 
   @Get(':projectId')
-  getProject(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
+  async getProject(@Param('projectId') projectId: string, @CurrentUserDecorator() user: CurrentUser) {
     return this.projectsService.getProject(projectId, user);
   }
 
   @Post(':projectId/artifacts')
-  createArtifact(
+  async createArtifact(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,

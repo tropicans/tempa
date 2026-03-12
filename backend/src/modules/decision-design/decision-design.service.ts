@@ -13,9 +13,9 @@ export class DecisionDesignService {
     private readonly auditService: AuditService,
   ) {}
 
-  generateDecisionOptions(projectId: string, user: CurrentUser) {
+  async generateDecisionOptions(projectId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'decision_option', 'generate');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     const options = [
       {
         decisionOptionId: 'option-1',
@@ -33,16 +33,16 @@ export class DecisionDesignService {
     return this.workspaceStoreService.saveDecisionOptions(projectId, options);
   }
 
-  selectDecisionOption(projectId: string, decisionOptionId: string, user: CurrentUser) {
+  async selectDecisionOption(projectId: string, decisionOptionId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'decision_option', 'select');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     return this.workspaceStoreService.selectDecisionOption(projectId, decisionOptionId);
   }
 
-  reviewDecisionPackage(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async reviewDecisionPackage(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'decision_option', 'review');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
-    const selected = this.workspaceStoreService.getDecisionOptions(projectId).find((option) => option.selectedFlag === true);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
+    const selected = (await this.workspaceStoreService.getDecisionOptions(projectId)).find((option) => option.selectedFlag === true);
     const result = { projectId, selectedDecisionOptionId: selected?.decisionOptionId, ...body };
     this.auditService.log(String(body.decision ?? 'review'), 'decision_package', String(selected?.decisionOptionId ?? projectId));
     return result;

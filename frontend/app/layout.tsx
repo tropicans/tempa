@@ -1,13 +1,6 @@
-import { DM_Sans } from 'next/font/google';
-import './globals.css';
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
-
-const dmSans = DM_Sans({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-dm-sans',
-});
+import './globals.css';
 
 export const metadata: Metadata = {
   title: 'TEMPA',
@@ -16,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className={dmSans.variable}>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>{children}</body>
     </html>
   );
 }

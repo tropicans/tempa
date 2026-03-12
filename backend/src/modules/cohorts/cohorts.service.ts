@@ -11,17 +11,17 @@ export class CohortsService {
     private readonly workspaceStoreService: WorkspaceStoreService,
   ) {}
 
-  createCohort(body: Record<string, unknown>, user: CurrentUser) {
+  async createCohort(body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'cohort', 'create');
     return this.workspaceStoreService.createCohort(body);
   }
 
-  createEnrollment(cohortId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async createEnrollment(cohortId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'enrollment', 'create');
     return this.workspaceStoreService.createEnrollment(cohortId, body);
   }
 
-  createMentorAssignment(cohortId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async createMentorAssignment(cohortId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'mentor_assignment', 'create');
     return this.workspaceStoreService.createMentorAssignment(cohortId, body);
   }

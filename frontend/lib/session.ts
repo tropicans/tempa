@@ -6,23 +6,28 @@ export async function getSessionRole() {
 }
 
 export async function getSessionUser() {
-  const role = await getSessionRole();
+  const cookieStore = await cookies();
+  const role = cookieStore.get('tempa-role')?.value ?? 'participant';
+  const userId = cookieStore.get('tempa-user-id')?.value ?? 'demo-user';
+  const fullName = cookieStore.get('tempa-user-name')?.value ?? 'Demo Participant';
 
-  switch (role) {
-    case 'mentor':
-      return { role, userId: 'mentor-demo', fullName: 'Demo Mentor' };
-    case 'program_admin':
-      return { role, userId: 'admin-demo', fullName: 'Demo Program Admin' };
-    case 'executive_viewer':
-      return { role, userId: 'executive-demo', fullName: 'Demo Executive' };
-    case 'platform_operator':
-      return { role, userId: 'operator-demo', fullName: 'Demo Operator' };
-    default:
-      return { role: 'participant', userId: 'demo-user', fullName: 'Demo Participant' };
-  }
+  return { role, userId, fullName };
 }
 
-export async function getSessionApiHeaders() {
+export async function getSessionToken(): Promise<string | undefined> {
+  const cookieStore = await cookies();
+  return cookieStore.get('tempa-token')?.value;
+}
+
+export async function getSessionApiHeaders(): Promise<Record<string, string>> {
+  const token = await getSessionToken();
+
+  /* ── Prefer JWT Bearer if available ─────────────────────────── */
+  if (token) {
+    return { Authorization: `Bearer ${token}` };
+  }
+
+  /* ── Fallback: legacy headers ───────────────────────────────── */
   const user = await getSessionUser();
   return {
     'x-tempa-role': user.role,

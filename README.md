@@ -35,6 +35,16 @@ npm run dev
 
 Runs on `http://localhost:3000`
 
+### Docker Compose
+
+You can run the entire stack (PostgreSQL, backend, frontend) with Docker:
+
+```bash
+docker compose up --build
+```
+
+This starts PostgreSQL on host port `7432` (container `5432`), the NestJS backend exposed at host `7001` (container `3001`), and the Next.js frontend on host `7000` (container `3000`) with `NEXT_PUBLIC_API_BASE_URL` automatically pointed at the backend service.
+
 ## Demo Access
 
 Open `/login` and choose a demo role:

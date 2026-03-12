@@ -15,28 +15,28 @@ export class ReflectionsService {
     private readonly auditService: AuditService,
   ) {}
 
-  upsertReflection(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async upsertReflection(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'reflection', 'create');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     return this.workspaceStoreService.upsertReflection(projectId, body);
   }
 
-  submitReflection(projectId: string, user: CurrentUser) {
+  async submitReflection(projectId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'reflection', 'submit');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
-    const reflection = this.workspaceStoreService.getReflection(projectId);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
+    const reflection = await this.workspaceStoreService.getReflection(projectId);
     if (!reflection) {
       throw new BadRequestException('Reflection draft is required before submission');
     }
     this.workflowStateService.assertTransition(reflection.workflowState as WorkflowState, 'submitted');
-    const updated = this.workspaceStoreService.updateReflectionState(projectId, 'submitted');
+    const updated = await this.workspaceStoreService.updateReflectionState(projectId, 'submitted');
     this.auditService.log('submit', 'reflection', String(updated.reflectionId));
     return updated;
   }
 
-  runReflectionAnalysis(projectId: string, user: CurrentUser) {
+  async runReflectionAnalysis(projectId: string, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'reflection', 'create');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     return this.workspaceStoreService.updateReflectionState(projectId, 'draft', {
       projectId,
       summary: 'AI reflection summary placeholder.',

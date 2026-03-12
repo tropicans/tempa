@@ -1,35 +1,39 @@
+import Link from 'next/link';
+
 import { AppShell } from '@/components/app-shell';
 import { PageCard } from '@/components/page-card';
 import { ReviewCard } from '@/components/review-card';
 import { StatCard } from '@/components/stat-card';
+import { fetchSessionJson } from '@/lib/api';
 import { getSessionRole } from '@/lib/session';
 
-const reviewItems = [
-  {
-    title: 'Digital Service Improvement Pilot',
-    phase: 'analysis',
-    state: 'submitted',
-    description: 'Participant submitted a problem diagnostic report and is waiting for mentor validation.',
-    href: '/app/mentor/projects/project-1/analysis-review',
-  },
-  {
-    title: 'Permit Workflow Acceleration',
-    phase: 'design',
-    state: 'under_review',
-    description: 'Decision option selection needs confirmation before implementation planning.',
-    href: '/app/mentor/projects/project-2/design-review',
-  },
-  {
-    title: 'Citizen Response Dashboard',
-    phase: 'evaluation',
-    state: 'submitted',
-    description: 'Reflection and assessment package is ready for final scoring review.',
-    href: '/app/mentor/projects/project-3/evaluation-review',
-  },
-];
+type ProjectItem = {
+  projectId: string;
+  projectTitle: string;
+  currentPhase: string;
+  workflowState: string;
+  participantUserId?: string;
+};
+
+function phaseToReviewHref(projectId: string, phase: string) {
+  const map: Record<string, string> = {
+    analysis: 'analysis-review',
+    design: 'design-review',
+    development: 'plan-review',
+    implementation: 'plan-review',
+    evaluation: 'evaluation-review',
+  };
+  return `/app/mentor/projects/${projectId}/${map[phase] ?? 'analysis-review'}`;
+}
 
 export default async function MentorReviewsPage() {
   const role = await getSessionRole();
+  const response = await fetchSessionJson<{ items: ProjectItem[] }>('/projects').catch(() => ({ items: [] }));
+
+  const reviewable = response.items.filter(
+    (p) => ['submitted', 'under_review'].includes(p.workflowState),
+  );
+  const allProjects = response.items;
 
   return (
     <AppShell title="Review Queue" subtitle="Unified queue for analysis, design, planning, and evaluation reviews." roleLabel={role}>
@@ -40,16 +44,39 @@ export default async function MentorReviewsPage() {
           <p className="muted">Queue ini menampilkan submission yang membutuhkan keputusan mentor agar proyek peserta tetap bergerak.</p>
         </div>
         <div className="metric-strip">
-          <StatCard label="Pending now" value={reviewItems.length} />
-          <StatCard label="Submitted" value={2} />
-          <StatCard label="Under review" value={1} />
+          <StatCard label="Total projects" value={allProjects.length} />
+          <StatCard label="Pending review" value={reviewable.length} />
+          <StatCard label="Submitted" value={allProjects.filter((p) => p.workflowState === 'submitted').length} />
         </div>
       </section>
-      <PageCard eyebrow="Review flow" title="Pending reviews" description="Filter and process mentor checkpoints from one place.">
+      <PageCard eyebrow="Review flow" title="Pending reviews" description="Projects waiting for mentor action.">
         <div className="project-list">
-          {reviewItems.map((item) => (
-            <ReviewCard key={item.href} {...item} />
+          {reviewable.map((item) => (
+            <ReviewCard
+              key={item.projectId}
+              title={item.projectTitle}
+              phase={item.currentPhase}
+              state={item.workflowState}
+              description={`Participant ${item.participantUserId ?? 'unknown'} has submitted work in the ${item.currentPhase} phase.`}
+              href={phaseToReviewHref(item.projectId, item.currentPhase)}
+            />
           ))}
+          {reviewable.length === 0 && <p className="muted">No submissions waiting for review.</p>}
+        </div>
+      </PageCard>
+      <PageCard eyebrow="All" title="All assigned projects" description="View any project to see full status.">
+        <div className="project-list">
+          {allProjects.map((item) => (
+            <Link key={item.projectId} className="project-row" href={phaseToReviewHref(item.projectId, item.currentPhase)}>
+              <strong>{item.projectTitle}</strong>
+              <div className="project-meta">
+                <span className="meta-chip">phase: {item.currentPhase}</span>
+                <span className="meta-chip">state: {item.workflowState}</span>
+                <span className="meta-chip">participant: {item.participantUserId ?? '–'}</span>
+              </div>
+            </Link>
+          ))}
+          {allProjects.length === 0 && <p className="muted">No projects assigned.</p>}
         </div>
       </PageCard>
     </AppShell>

@@ -11,15 +11,15 @@ export class MonitoringService {
     private readonly workspaceStoreService: WorkspaceStoreService,
   ) {}
 
-  createProgressLog(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async createProgressLog(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'progress_log', 'create');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     return this.workspaceStoreService.createProgressLog(projectId, body, user);
   }
 
-  createImpactMetric(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
+  async createImpactMetric(projectId: string, body: Record<string, unknown>, user: CurrentUser) {
     this.authorizationService.assertAccess(user, 'impact_metric', 'create');
-    this.workspaceStoreService.assertProjectAccess(projectId, user);
+    await this.workspaceStoreService.assertProjectAccess(projectId, user);
     return this.workspaceStoreService.createImpactMetric(projectId, body);
   }
 }

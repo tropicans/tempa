@@ -9,17 +9,18 @@ export class ProgramsController {
   constructor(private readonly programsService: ProgramsService) {}
 
   @Get()
-  listPrograms(@CurrentUserDecorator() user: CurrentUser) {
-    return { items: this.programsService.listPrograms(user) };
+  async listPrograms(@CurrentUserDecorator() user: CurrentUser) {
+    const items = await this.programsService.listPrograms(user);
+    return { items };
   }
 
   @Post()
-  createProgram(@Body() body: Record<string, unknown>, @CurrentUserDecorator() user: CurrentUser) {
+  async createProgram(@Body() body: Record<string, unknown>, @CurrentUserDecorator() user: CurrentUser) {
     return this.programsService.createProgram(body, user);
   }
 
   @Get(':programId')
-  getProgram(@Param('programId') programId: string, @CurrentUserDecorator() user: CurrentUser) {
+  async getProgram(@Param('programId') programId: string, @CurrentUserDecorator() user: CurrentUser) {
     return this.programsService.getProgram(programId, user);
   }
 }

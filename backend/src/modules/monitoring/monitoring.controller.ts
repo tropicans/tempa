@@ -9,7 +9,7 @@ export class MonitoringController {
   constructor(private readonly monitoringService: MonitoringService) {}
 
   @Post('progress-logs')
-  createProgressLog(
+  async createProgressLog(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,
@@ -18,7 +18,7 @@ export class MonitoringController {
   }
 
   @Post('impact-metrics')
-  createImpactMetric(
+  async createImpactMetric(
     @Param('projectId') projectId: string,
     @Body() body: Record<string, unknown>,
     @CurrentUserDecorator() user: CurrentUser,
