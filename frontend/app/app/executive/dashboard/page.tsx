@@ -7,16 +7,19 @@ export default async function ExecutiveDashboardPage() {
 
   return (
     <AppShell title="Executive Dashboard" subtitle="Aggregate view of approved project outcomes and talent indicators." roleLabel={role}>
-      <section className="card hero-panel">
+      <section className="hero-banner card">
         <div className="hero-copy">
           <div className="section-eyebrow">Leadership view</div>
           <h2 className="hero-title">Lihat dampak program dan sinyal talenta tanpa tenggelam di detail operasional.</h2>
           <p className="muted">Executive mode menekankan portfolio health, implementation rate, dan distribusi TAI sebagai sinyal strategis.</p>
         </div>
-        <div className="metric-strip">
-          <div className="metric-card"><div className="metric-label">Programs</div><div className="metric-value">1</div></div>
-          <div className="metric-card"><div className="metric-label">Projects</div><div className="metric-value">12</div></div>
-          <div className="metric-card"><div className="metric-label">Avg TAI</div><div className="metric-value">71.5</div></div>
+        <div className="hero-panel-surface stack">
+          <div className="metric-card accent-card"><div className="metric-label">Portfolio health</div><div className="metric-value">Stable</div></div>
+          <div className="metric-strip">
+            <div className="metric-card"><div className="metric-label">Programs</div><div className="metric-value">1</div></div>
+            <div className="metric-card"><div className="metric-label">Projects</div><div className="metric-value">12</div></div>
+            <div className="metric-card"><div className="metric-label">Avg TAI</div><div className="metric-value">71.5</div></div>
+          </div>
         </div>
       </section>
       <div className="grid grid-3">

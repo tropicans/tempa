@@ -37,33 +37,44 @@ export default async function MentorReviewsPage() {
 
   return (
     <AppShell title="Review Queue" subtitle="Unified queue for analysis, design, planning, and evaluation reviews." roleLabel={role}>
-      <section className="card hero-panel">
+      <section className="hero-banner card">
         <div className="hero-copy">
           <div className="section-eyebrow">Mentor queue</div>
           <h2 className="hero-title">Lihat apa yang harus direview sekarang dan prioritaskan yang paling blocking.</h2>
           <p className="muted">Queue ini menampilkan submission yang membutuhkan keputusan mentor agar proyek peserta tetap bergerak.</p>
         </div>
-        <div className="metric-strip">
-          <StatCard label="Total projects" value={allProjects.length} />
-          <StatCard label="Pending review" value={reviewable.length} />
-          <StatCard label="Submitted" value={allProjects.filter((p) => p.workflowState === 'submitted').length} />
+        <div className="hero-panel-surface stack">
+          <div className="metric-card accent-card"><div className="metric-label">Pending review</div><div className="metric-value">{reviewable.length}</div></div>
+          <div className="metric-strip">
+            <StatCard label="Total projects" value={allProjects.length} />
+            <StatCard label="Submitted" value={allProjects.filter((p) => p.workflowState === 'submitted').length} />
+          </div>
         </div>
       </section>
-      <PageCard eyebrow="Review flow" title="Pending reviews" description="Projects waiting for mentor action.">
-        <div className="project-list">
-          {reviewable.map((item) => (
-            <ReviewCard
-              key={item.projectId}
-              title={item.projectTitle}
-              phase={item.currentPhase}
-              state={item.workflowState}
-              description={`Participant ${item.participantUserId ?? 'unknown'} has submitted work in the ${item.currentPhase} phase.`}
-              href={phaseToReviewHref(item.projectId, item.currentPhase)}
-            />
-          ))}
-          {reviewable.length === 0 && <p className="muted">No submissions waiting for review.</p>}
-        </div>
-      </PageCard>
+      <div className="grid grid-2">
+        <PageCard eyebrow="Review flow" title="Pending reviews" description="Projects waiting for mentor action.">
+          <div className="project-list">
+            {reviewable.map((item) => (
+              <ReviewCard
+                key={item.projectId}
+                title={item.projectTitle}
+                phase={item.currentPhase}
+                state={item.workflowState}
+                description={`Participant ${item.participantUserId ?? 'unknown'} has submitted work in the ${item.currentPhase} phase.`}
+                href={phaseToReviewHref(item.projectId, item.currentPhase)}
+              />
+            ))}
+            {reviewable.length === 0 && <p className="muted">No submissions waiting for review.</p>}
+          </div>
+        </PageCard>
+        <PageCard eyebrow="Queue principle" title="What makes this easy to use" description="A good review queue should help mentors decide what to open next at a glance.">
+          <div className="journey-list">
+            <div className="journey-step"><strong>1</strong><div><h3>Prioritize submitted work</h3><p className="muted">Surface the items that block participant progress first.</p></div></div>
+            <div className="journey-step"><strong>2</strong><div><h3>Keep labels consistent</h3><p className="muted">Phase names should mirror the participant workspace to reduce translation overhead.</p></div></div>
+            <div className="journey-step"><strong>3</strong><div><h3>Return here after every decision</h3><p className="muted">The queue should remain the clearest recovery point after a review action.</p></div></div>
+          </div>
+        </PageCard>
+      </div>
       <PageCard eyebrow="All" title="All assigned projects" description="View any project to see full status.">
         <div className="project-list">
           {allProjects.map((item) => (

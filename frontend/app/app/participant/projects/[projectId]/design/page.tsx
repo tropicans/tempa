@@ -112,6 +112,13 @@ export default async function DesignPage({
             </div>
           )}
         </PageCard>
+        <PageCard eyebrow="Decision quality" title="What a strong option looks like" description="Use these heuristics to keep design choices grounded and reviewable.">
+          <div className="journey-list">
+            <div className="journey-step"><strong>1</strong><div><h3>Clear trade-offs</h3><p className="muted">The chosen option explains why its benefits outweigh risk and execution cost.</p></div></div>
+            <div className="journey-step"><strong>2</strong><div><h3>Real feasibility</h3><p className="muted">The option fits stakeholder, capability, and timing constraints.</p></div></div>
+            <div className="journey-step"><strong>3</strong><div><h3>Logical bridge to implementation</h3><p className="muted">The selection makes the next planning phase easier, not more ambiguous.</p></div></div>
+          </div>
+        </PageCard>
       </PhaseWorkspace>
     </AppShell>
   );

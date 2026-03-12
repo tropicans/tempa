@@ -54,16 +54,18 @@ export default async function DesignReviewPage({
 
   return (
     <AppShell title="Design Review" subtitle={`Review decision options for ${project.projectTitle}.`} roleLabel={role}>
-      <section className="card hero-panel">
+      <section className="hero-banner card">
         <div className="hero-copy">
           <div className="section-eyebrow">Decision review</div>
           <h2 className="hero-title">Validasi apakah opsi yang dipilih benar-benar paling layak.</h2>
           <p className="muted">Bandingkan manfaat, risiko, dan feasibility sebelum peserta masuk ke implementation plan.</p>
         </div>
-        <div className="metric-strip">
-          <StatCard label="Phase" value="Design" />
-          <StatCard label="Options" value={options.length} />
-          <StatCard label="Selected" value={selectedOption?.optionTitle ?? 'None'} />
+        <div className="hero-panel-surface stack">
+          <div className="metric-card accent-card"><div className="metric-label">Selected option</div><div className="metric-value">{selectedOption?.optionTitle ?? 'None'}</div></div>
+          <div className="metric-strip">
+            <StatCard label="Phase" value="Design" />
+            <StatCard label="Options" value={options.length} />
+          </div>
         </div>
       </section>
       <div className="grid grid-2">

@@ -91,7 +91,7 @@ export default async function ImplementationPage({
       <PhaseWorkspace phase="Implementation" projectTitle={project.projectTitle} projectState={project.workflowState}>
         <PageCard eyebrow="Track" title="Progress log" description="Record implementation progress, status notes, and risks.">
           <form action={addProgressLog} className="stack">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-grid-2">
               <label className="field">
                 <span>Phase</span>
                 <select name="phaseName" defaultValue="implementation">
@@ -126,7 +126,7 @@ export default async function ImplementationPage({
                   <div>
                     <strong>{log.phaseName} — {log.progressPercent}%</strong>
                     {log.statusNote && <p className="muted">{log.statusNote}</p>}
-                    {log.riskNote && <p className="muted" style={{ color: 'var(--color-warning, #f59e0b)' }}>⚠ {log.riskNote}</p>}
+                    {log.riskNote && <p className="tiny-note" style={{ color: '#a16207' }}>Risk: {log.riskNote}</p>}
                     <div className="project-meta">
                       <span className="meta-chip">{new Date(log.loggedAt).toLocaleDateString()}</span>
                     </div>
@@ -140,7 +140,7 @@ export default async function ImplementationPage({
 
         <PageCard eyebrow="Measure" title="Impact metrics" description="Record baseline, target, and actual values for your key performance indicators.">
           <form action={addImpactMetric} className="stack">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-grid-2">
               <label className="field">
                 <span>Metric name</span>
                 <input name="metricName" placeholder="e.g. Service processing time" required />
@@ -150,7 +150,7 @@ export default async function ImplementationPage({
                 <input name="unitOfMeasure" placeholder="e.g. days, %, count" />
               </label>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1rem' }}>
+            <div className="form-grid-3">
               <label className="field">
                 <span>Baseline</span>
                 <input name="baselineValue" type="number" step="any" placeholder="Before" />
@@ -186,6 +186,13 @@ export default async function ImplementationPage({
             </div>
           )}
           {metrics.length === 0 && <p className="muted" style={{ marginTop: '1rem' }}>No impact metrics recorded yet.</p>}
+        </PageCard>
+        <PageCard eyebrow="Operating rhythm" title="Keep implementation readable" description="This view should surface progress and proof, not just raw entries.">
+          <div className="journey-list">
+            <div className="journey-step"><strong>1</strong><div><h3>Log short updates</h3><p className="muted">Use concise status notes so mentors and admins can scan momentum quickly.</p></div></div>
+            <div className="journey-step"><strong>2</strong><div><h3>Track only meaningful metrics</h3><p className="muted">Prefer a few high-signal KPIs over a long list of weak ones.</p></div></div>
+            <div className="journey-step"><strong>3</strong><div><h3>Show blockers early</h3><p className="muted">Risk notes help the program support the project before delay compounds.</p></div></div>
+          </div>
         </PageCard>
       </PhaseWorkspace>
     </AppShell>

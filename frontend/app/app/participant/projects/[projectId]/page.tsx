@@ -25,7 +25,7 @@ export default async function ParticipantProjectOverviewPage({
 
   return (
     <AppShell title="Project Overview" subtitle="Summary of project status, mentor assignment, and evidence health." roleLabel={role}>
-      <section className="card hero-panel">
+      <section className="hero-banner card">
         <div className="hero-copy">
           <div className="section-eyebrow">Project overview</div>
           <h2 className="hero-title">{project.projectTitle}</h2>
@@ -35,32 +35,40 @@ export default async function ParticipantProjectOverviewPage({
             <Link className="button secondary" href="/app/participant/projects">Back to projects</Link>
           </div>
         </div>
-        <div className="metric-strip">
-          <div className="metric-card">
+        <div className="hero-panel-surface stack">
+          <div className="metric-card accent-card">
             <div className="metric-label">Current phase</div>
             <div className="metric-value">{project.currentPhase}</div>
           </div>
-          <div className="metric-card">
-            <div className="metric-label">Workflow state</div>
-            <div className="metric-value">{project.workflowState}</div>
+          <div className="metric-strip">
+            <div className="metric-card">
+              <div className="metric-label">Workflow state</div>
+              <div className="metric-value">{project.workflowState}</div>
+            </div>
+            <div className="metric-card">
+              <div className="metric-label">Mentor</div>
+              <div className="metric-value">{project.mentorUserId ?? 'Pending'}</div>
+            </div>
           </div>
         </div>
       </section>
-      <PageCard eyebrow="Details" title="Live project detail" description="Live project detail from the backend starter API.">
-        <div className="stack">
-          <p><strong>Project ID:</strong> {project.projectId}</p>
-          <p><strong>Current phase:</strong> {project.currentPhase}</p>
-          <p><strong>Workflow state:</strong> {project.workflowState}</p>
-          <p><strong>Mentor:</strong> {project.mentorUserId ?? 'Not assigned yet'}</p>
-        </div>
-      </PageCard>
-      <PageCard eyebrow="Journey" title="Next actions" description="Move the project through the guided ADDIE workflow.">
-        <div className="journey-list">
-          <div className="journey-step"><strong>1</strong><div><b>Draft the problem</b><p className="muted">Capture the organizational context and current evidence.</p></div></div>
-          <div className="journey-step"><strong>2</strong><div><b>Run AI assist</b><p className="muted">Use AI to sharpen framing, causes, and stakeholders.</p></div></div>
-          <div className="journey-step"><strong>3</strong><div><b>Submit for mentor review</b><p className="muted">Lock the analysis foundation before moving to design.</p></div></div>
-        </div>
-      </PageCard>
+      <div className="grid grid-2">
+        <PageCard eyebrow="Details" title="Live project detail" description="Current delivery context from the backend workspace record.">
+          <div className="kv-list">
+            <div className="kv-row"><span className="kv-key">Project ID</span><strong>{project.projectId}</strong></div>
+            <div className="kv-row"><span className="kv-key">Current phase</span><strong>{project.currentPhase}</strong></div>
+            <div className="kv-row"><span className="kv-key">Workflow state</span><strong>{project.workflowState}</strong></div>
+            <div className="kv-row"><span className="kv-key">Mentor</span><strong>{project.mentorUserId ?? 'Not assigned yet'}</strong></div>
+          </div>
+        </PageCard>
+        <PageCard eyebrow="Journey" title="Next actions" description="Move the project through the guided delivery rhythm with less navigation friction.">
+          <div className="journey-list">
+            <div className="journey-step"><strong>1</strong><div><h3>Draft the problem</h3><p className="muted">Capture the organizational context and the evidence behind the issue.</p></div></div>
+            <div className="journey-step"><strong>2</strong><div><h3>Use AI only to sharpen</h3><p className="muted">Start manually, then refine framing, causes, and stakeholder coverage.</p></div></div>
+            <div className="journey-step"><strong>3</strong><div><h3>Submit for mentor review</h3><p className="muted">Lock the analysis foundation before moving into design decisions.</p></div></div>
+          </div>
+        </PageCard>
+      </div>
     </AppShell>
   );
 }

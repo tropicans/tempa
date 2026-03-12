@@ -100,7 +100,7 @@ export default async function EvaluationPage({
 
         <PageCard eyebrow="Score" title="TAI score" description="Thinking Acuity Index — a composite score across four dimensions.">
           {taiScore ? (
-            <div className="stack">
+            <div className="metric-stack">
               <div className="metric-strip">
                 <div className="metric-card">
                   <div className="metric-label">Problem Complexity</div>
@@ -119,7 +119,7 @@ export default async function EvaluationPage({
                   <div className="metric-value">{taiScore.reflectiveMaturityScore ?? 0}</div>
                 </div>
               </div>
-              <div className="signal-box" style={{ textAlign: 'center' }}>
+              <div className="signal-box center-signal">
                 <strong style={{ fontSize: '1.5rem' }}>Total TAI: {taiScore.totalTaiScore ?? 0}</strong>
                 {taiScore.publishedFlag && <p className="muted">Published ✓</p>}
               </div>
@@ -134,6 +134,13 @@ export default async function EvaluationPage({
             <div className="journey-step"><strong>1</strong><div><b>Honest reflection</b><p className="muted">Self-aware analysis of strengths and areas for growth.</p></div></div>
             <div className="journey-step"><strong>2</strong><div><b>Evidence linked</b><p className="muted">Impact metrics tied to concrete project outcomes.</p></div></div>
             <div className="journey-step"><strong>3</strong><div><b>Mentor discussion</b><p className="muted">Discussion with mentor to calibrate learning takeaways.</p></div></div>
+          </div>
+        </PageCard>
+        <PageCard eyebrow="Reflection quality" title="What a strong closeout feels like" description="The best evaluation screens help participants tell a clean story from action to learning.">
+          <div className="journey-list">
+            <div className="journey-step"><strong>1</strong><div><h3>Connect action to outcome</h3><p className="muted">Reflection should explain what changed, not just what was done.</p></div></div>
+            <div className="journey-step"><strong>2</strong><div><h3>Use evidence with context</h3><p className="muted">Metrics are most useful when they show movement from baseline to current state.</p></div></div>
+            <div className="journey-step"><strong>3</strong><div><h3>Make growth visible</h3><p className="muted">TAI is easier to trust when the narrative clearly supports the score.</p></div></div>
           </div>
         </PageCard>
       </PhaseWorkspace>

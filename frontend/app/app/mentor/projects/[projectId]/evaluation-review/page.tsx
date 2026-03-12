@@ -71,22 +71,24 @@ export default async function EvaluationReviewPage({
 
   return (
     <AppShell title="Evaluation Review" subtitle={`Final assessment and TAI publication for ${project.projectTitle}.`} roleLabel={role}>
-      <section className="card hero-panel">
+      <section className="hero-banner card">
         <div className="hero-copy">
           <div className="section-eyebrow">Final review</div>
           <h2 className="hero-title">Gabungkan reflection, evidence, dan judgment mentor ke hasil akhir yang kredibel.</h2>
           <p className="muted">Di tahap ini mentor menilai kedewasaan refleksi dan kesiapan publikasi skor TAI.</p>
         </div>
-        <div className="metric-strip">
-          <StatCard label="Reflection" value={reflection?.workflowState ?? 'pending'} />
-          <StatCard label="TAI Score" value={taiScore?.totalTaiScore ?? '–'} />
-          <StatCard label="Published" value={taiScore?.publishedFlag ? 'Yes' : 'No'} />
+        <div className="hero-panel-surface stack">
+          <div className="metric-card accent-card"><div className="metric-label">TAI score</div><div className="metric-value">{taiScore?.totalTaiScore ?? '–'}</div></div>
+          <div className="metric-strip">
+            <StatCard label="Reflection" value={reflection?.workflowState ?? 'pending'} />
+            <StatCard label="Published" value={taiScore?.publishedFlag ? 'Yes' : 'No'} />
+          </div>
         </div>
       </section>
       <div className="grid grid-2">
         <PageCard eyebrow="Reflection" title="Participant reflection" description="Review the participant's self-reflection and AI analysis.">
           <div className="stack">
-            <div>
+            <div className="list-panel">
               <strong>Reflection</strong>
               <p className="muted">{reflection?.reflectionText ?? 'No reflection submitted yet.'}</p>
             </div>
@@ -100,7 +102,7 @@ export default async function EvaluationReviewPage({
         </PageCard>
         <PageCard eyebrow="Assessment" title="Score dimensions" description="Enter scores for each TAI dimension (0–25 each).">
           <form action={submitAssessment} className="stack">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-grid-2">
               <label className="field">
                 <span>Problem Complexity</span>
                 <input name="problemComplexityScore" type="number" min={0} max={25} defaultValue={taiScore?.problemComplexityScore ?? 0} />
@@ -130,14 +132,14 @@ export default async function EvaluationReviewPage({
       </div>
       {taiScore && (
         <PageCard eyebrow="Publish" title="TAI publication" description="Finalize the score and make it visible to the participant and program admin.">
-          <div className="stack">
+          <div className="metric-stack">
             <div className="metric-strip">
               <div className="metric-card"><div className="metric-label">Problem Complexity</div><div className="metric-value">{taiScore.problemComplexityScore ?? 0}</div></div>
               <div className="metric-card"><div className="metric-label">Decision Quality</div><div className="metric-value">{taiScore.decisionQualityScore ?? 0}</div></div>
               <div className="metric-card"><div className="metric-label">Impact</div><div className="metric-value">{taiScore.impactScore ?? 0}</div></div>
               <div className="metric-card"><div className="metric-label">Reflective Maturity</div><div className="metric-value">{taiScore.reflectiveMaturityScore ?? 0}</div></div>
             </div>
-            <div className="signal-box" style={{ textAlign: 'center' }}>
+            <div className="signal-box center-signal">
               <strong style={{ fontSize: '1.5rem' }}>Total TAI: {taiScore.totalTaiScore ?? 0}</strong>
               {taiScore.publishedFlag && <p className="muted">✓ Already published</p>}
             </div>

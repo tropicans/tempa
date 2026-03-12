@@ -83,19 +83,24 @@ export default async function AnalysisPage({
         </PageCard>
         <PageCard eyebrow="AI output" title="Diagnostic report" description="AI reframing, root causes, stakeholders, and competency gaps.">
           <div className="stack">
-            <p><strong>Workflow state:</strong> {problem.workflowState ?? project.workflowState}</p>
-            <p><strong>Reframed problem:</strong> {problem.reframedProblemText ?? 'No AI reframing yet.'}</p>
-            <p><strong>Confidence:</strong> {problem.confidenceScore ?? 'N/A'}</p>
-            <div>
+            <div className="kv-list">
+              <div className="kv-row"><span className="kv-key">Workflow state</span><strong>{problem.workflowState ?? project.workflowState}</strong></div>
+              <div className="kv-row"><span className="kv-key">AI confidence</span><strong>{problem.confidenceScore ?? 'N/A'}</strong></div>
+            </div>
+            <div className="list-panel">
+              <strong>Reframed problem</strong>
+              <p className="muted">{problem.reframedProblemText ?? 'No AI reframing yet.'}</p>
+            </div>
+            <div className="list-panel">
               <strong>Root causes</strong>
-              <ul className="quick-list">
+              <ul className="plain-list">
                 {(problem.rootCauses ?? []).map((item) => <li key={item}>{item}</li>)}
                 {(problem.rootCauses ?? []).length === 0 ? <li className="muted">No root causes generated yet.</li> : null}
               </ul>
             </div>
-            <div>
+            <div className="list-panel">
               <strong>Stakeholders</strong>
-              <ul className="quick-list">
+              <ul className="plain-list">
                 {(problem.stakeholders ?? []).map((item) => <li key={item}>{item}</li>)}
                 {(problem.stakeholders ?? []).length === 0 ? <li className="muted">No stakeholders generated yet.</li> : null}
               </ul>

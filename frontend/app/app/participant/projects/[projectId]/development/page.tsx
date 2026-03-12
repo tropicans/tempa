@@ -72,22 +72,26 @@ export default async function DevelopmentPage({
       <PhaseWorkspace phase="Development" projectTitle={project.projectTitle} projectState={plan?.workflowState ?? project.workflowState}>
         <PageCard eyebrow="Plan" title="Implementation plan" description="Define your roadmap, milestones, KPIs, and risks. Editable in draft or revision states.">
           <form action={savePlan} className="stack">
-            <label className="field">
-              <span>Roadmap (one item per line)</span>
-              <textarea name="roadmap" rows={4} defaultValue={toLines(plan?.roadmapJson)} placeholder="Phase 1: Stakeholder alignment&#10;Phase 2: Pilot launch&#10;Phase 3: Full rollout" />
-            </label>
-            <label className="field">
-              <span>Milestones (one per line)</span>
-              <textarea name="milestones" rows={4} defaultValue={toLines(plan?.milestoneJson)} placeholder="M1: Stakeholder mapping complete&#10;M2: Pilot launched&#10;M3: Impact report submitted" />
-            </label>
-            <label className="field">
-              <span>KPIs (one per line)</span>
-              <textarea name="kpis" rows={4} defaultValue={toLines(plan?.kpiJson)} placeholder="Service processing time reduced by 30%&#10;Citizen satisfaction > 85%" />
-            </label>
-            <label className="field">
-              <span>Risk register (one per line)</span>
-              <textarea name="risks" rows={4} defaultValue={toLines(plan?.riskRegisterJson)} placeholder="Stakeholder resistance to new process&#10;Budget constraints during pilot phase" />
-            </label>
+            <div className="split-layout">
+              <label className="field">
+                <span>Roadmap (one item per line)</span>
+                <textarea name="roadmap" rows={6} defaultValue={toLines(plan?.roadmapJson)} placeholder="Phase 1: Stakeholder alignment&#10;Phase 2: Pilot launch&#10;Phase 3: Full rollout" />
+              </label>
+              <label className="field">
+                <span>Milestones (one per line)</span>
+                <textarea name="milestones" rows={6} defaultValue={toLines(plan?.milestoneJson)} placeholder="M1: Stakeholder mapping complete&#10;M2: Pilot launched&#10;M3: Impact report submitted" />
+              </label>
+            </div>
+            <div className="split-layout">
+              <label className="field">
+                <span>KPIs (one per line)</span>
+                <textarea name="kpis" rows={6} defaultValue={toLines(plan?.kpiJson)} placeholder="Service processing time reduced by 30%&#10;Citizen satisfaction > 85%" />
+              </label>
+              <label className="field">
+                <span>Risk register (one per line)</span>
+                <textarea name="risks" rows={6} defaultValue={toLines(plan?.riskRegisterJson)} placeholder="Stakeholder resistance to new process&#10;Budget constraints during pilot phase" />
+              </label>
+            </div>
             <div className="actions">
               <button className="button" type="submit">Save plan</button>
               <button className="button secondary" formAction={submitPlan}>Submit for review</button>
@@ -107,6 +111,13 @@ export default async function DevelopmentPage({
             <div className="journey-step"><strong>1</strong><div><b>Clear roadmap</b><p className="muted">Phased plan with realistic timelines.</p></div></div>
             <div className="journey-step"><strong>2</strong><div><b>Measurable KPIs</b><p className="muted">Concrete metrics tied to the problem statement.</p></div></div>
             <div className="journey-step"><strong>3</strong><div><b>Risk awareness</b><p className="muted">Key risks identified with mitigation strategies.</p></div></div>
+          </div>
+        </PageCard>
+        <PageCard eyebrow="Planning principle" title="Keep the plan easy to review" description="Mentors should be able to scan this phase in minutes, not decode a dense wall of text.">
+          <div className="journey-list">
+            <div className="journey-step"><strong>1</strong><div><h3>Write one item per line</h3><p className="muted">Keep roadmap, KPI, and risk entries short and distinct.</p></div></div>
+            <div className="journey-step"><strong>2</strong><div><h3>Link KPIs to the original problem</h3><p className="muted">A plan is stronger when each metric clearly ties back to the issue being solved.</p></div></div>
+            <div className="journey-step"><strong>3</strong><div><h3>Anticipate revision</h3><p className="muted">Structure the plan so mentor feedback can be applied quickly.</p></div></div>
           </div>
         </PageCard>
       </PhaseWorkspace>

@@ -61,46 +61,48 @@ export default async function PlanReviewPage({
 
   return (
     <AppShell title="Implementation Plan Review" subtitle={`Review roadmap, milestones, KPIs, and risk controls for ${project.projectTitle}.`} roleLabel={role}>
-      <section className="card hero-panel">
+      <section className="hero-banner card">
         <div className="hero-copy">
           <div className="section-eyebrow">Development gate</div>
           <h2 className="hero-title">Pastikan rencana implementasi cukup konkret untuk dieksekusi.</h2>
           <p className="muted">Periksa milestone, KPI, dan risk handling sebelum proyek masuk implementation mode.</p>
         </div>
-        <div className="metric-strip">
-          <StatCard label="Milestones" value={milestones.length} />
-          <StatCard label="KPIs" value={kpis.length} />
-          <StatCard label="Risks" value={risks.length} />
-          <StatCard label="State" value={plan?.workflowState ?? project.workflowState} />
+        <div className="hero-panel-surface stack">
+          <div className="metric-card accent-card"><div className="metric-label">State</div><div className="metric-value">{plan?.workflowState ?? project.workflowState}</div></div>
+          <div className="metric-strip">
+            <StatCard label="Milestones" value={milestones.length} />
+            <StatCard label="KPIs" value={kpis.length} />
+            <StatCard label="Risks" value={risks.length} />
+          </div>
         </div>
       </section>
       <div className="grid grid-2">
         <PageCard eyebrow="Blueprint" title="Plan content" description="Participant's roadmap, milestones, KPIs, and risk register.">
           <div className="stack">
-            <div>
+            <div className="list-panel">
               <strong>Roadmap</strong>
-              <ul className="quick-list">
+              <ul className="plain-list">
                 {roadmap.map((item, i) => <li key={i}>{item}</li>)}
                 {roadmap.length === 0 && <li className="muted">No roadmap defined yet.</li>}
               </ul>
             </div>
-            <div>
+            <div className="list-panel">
               <strong>Milestones</strong>
-              <ul className="quick-list">
+              <ul className="plain-list">
                 {milestones.map((item, i) => <li key={i}>{item}</li>)}
                 {milestones.length === 0 && <li className="muted">No milestones defined yet.</li>}
               </ul>
             </div>
-            <div>
+            <div className="list-panel">
               <strong>KPIs</strong>
-              <ul className="quick-list">
+              <ul className="plain-list">
                 {kpis.map((item, i) => <li key={i}>{item}</li>)}
                 {kpis.length === 0 && <li className="muted">No KPIs defined yet.</li>}
               </ul>
             </div>
-            <div>
+            <div className="list-panel">
               <strong>Risk register</strong>
-              <ul className="quick-list">
+              <ul className="plain-list">
                 {risks.map((item, i) => <li key={i}>{item}</li>)}
                 {risks.length === 0 && <li className="muted">No risks registered yet.</li>}
               </ul>

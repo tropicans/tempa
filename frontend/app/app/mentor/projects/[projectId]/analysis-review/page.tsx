@@ -53,41 +53,43 @@ export default async function AnalysisReviewPage({
 
   return (
     <AppShell title="Analysis Review" subtitle={`Review problem diagnostic for ${project.projectTitle}.`} roleLabel={role}>
-      <section className="card hero-panel">
+      <section className="hero-banner card">
         <div className="hero-copy">
           <div className="section-eyebrow">Checkpoint review</div>
           <h2 className="hero-title">Pastikan framing masalah sudah cukup tajam untuk lanjut ke design.</h2>
           <p className="muted">Fokus pada kejelasan problem, kualitas root cause, dan kecukupan stakeholder mapping.</p>
         </div>
-        <div className="metric-strip">
-          <StatCard label="Phase" value="Analysis" />
-          <StatCard label="State" value={problem.workflowState ?? project.workflowState} />
-          {problem.confidenceScore != null && <StatCard label="AI Confidence" value={`${(problem.confidenceScore * 100).toFixed(0)}%`} />}
+        <div className="hero-panel-surface stack">
+          <div className="metric-card accent-card"><div className="metric-label">State</div><div className="metric-value">{problem.workflowState ?? project.workflowState}</div></div>
+          <div className="metric-strip">
+            <StatCard label="Phase" value="Analysis" />
+            {problem.confidenceScore != null && <StatCard label="AI Confidence" value={`${(problem.confidenceScore * 100).toFixed(0)}%`} />}
+          </div>
         </div>
       </section>
       <div className="grid grid-2">
         <PageCard eyebrow="Submission" title="Diagnostic report" description="Participant problem statement and AI analysis output.">
           <div className="stack">
-            <div>
+            <div className="list-panel">
               <strong>Problem statement</strong>
               <p className="muted">{problem.rawProblemText ?? 'No problem statement submitted yet.'}</p>
             </div>
             {problem.reframedProblemText && (
-              <div>
+              <div className="list-panel">
                 <strong>AI-reframed problem</strong>
                 <p className="muted">{problem.reframedProblemText}</p>
               </div>
             )}
-            <div>
+            <div className="list-panel">
               <strong>Root causes</strong>
-              <ul className="quick-list">
+              <ul className="plain-list">
                 {(problem.rootCauses ?? []).map((item) => <li key={item}>{item}</li>)}
                 {(problem.rootCauses ?? []).length === 0 && <li className="muted">No root causes generated yet.</li>}
               </ul>
             </div>
-            <div>
+            <div className="list-panel">
               <strong>Stakeholders</strong>
-              <ul className="quick-list">
+              <ul className="plain-list">
                 {(problem.stakeholders ?? []).map((item) => <li key={item}>{item}</li>)}
                 {(problem.stakeholders ?? []).length === 0 && <li className="muted">No stakeholders identified yet.</li>}
               </ul>
