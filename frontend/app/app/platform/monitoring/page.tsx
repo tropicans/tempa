@@ -1,5 +1,9 @@
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
+import { DataTableCard } from '@/components/data-table-card';
+import { FilterToolbar } from '@/components/filter-toolbar';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { getSessionRole } from '@/lib/session';
 
 export default async function PlatformMonitoringPage() {
@@ -14,49 +18,55 @@ export default async function PlatformMonitoringPage() {
           <p className="muted">Operator view harus ringkas: health, incident signals, and configuration checkpoints first.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Platform status</div><div className="metric-value">Healthy</div></div>
+          <AccentCard label="Platform status" value="Healthy" />
           <div className="metric-strip">
-            <div className="metric-card"><div className="metric-label">API</div><div className="metric-value">OK</div></div>
-            <div className="metric-card"><div className="metric-label">Jobs</div><div className="metric-value">OK</div></div>
-            <div className="metric-card"><div className="metric-label">AI latency</div><div className="metric-value">Nominal</div></div>
+            <StatCard label="API" value="OK" />
+            <StatCard label="Jobs" value="OK" />
+            <StatCard label="AI latency" value="Nominal" />
           </div>
         </div>
       </section>
       <div className="grid grid-2">
-        <PageCard title="System monitoring" description="Show service health, queue health, and AI latency metrics here.">
-          <div className="toolbar-row">
-            <div className="chip-row">
-              <div className="filter-chip is-active">All services</div>
-              <div className="filter-chip">API</div>
-              <div className="filter-chip">Workers</div>
-              <div className="filter-chip">AI</div>
-            </div>
-            <div className="filter-chip">Last 15 min</div>
-          </div>
-          <div className="table-card">
-            <div className="table-head">
-              <span>Service</span>
-              <span>Status</span>
-              <span>Latency</span>
-              <span>Signal</span>
-            </div>
-            <div className="table-list">
-              <div className="table-grid">
-                <div className="table-primary"><strong>Backend API</strong><span className="table-secondary">Core session and project endpoints</span></div>
-                <div className="table-cell"><span className="inline-status"><span className="status-dot" />Healthy</span></div>
-                <div className="table-cell">132 ms</div>
-                <div className="table-cell">Nominal</div>
-              </div>
-              <div className="table-grid">
-                <div className="table-primary"><strong>AI worker</strong><span className="table-secondary">Analysis and reflection assistance jobs</span></div>
-                <div className="table-cell"><span className="inline-status"><span className="status-dot" />Healthy</span></div>
-                <div className="table-cell">420 ms</div>
-                <div className="table-cell">Watch</div>
-              </div>
-            </div>
-          </div>
+        <PageCard eyebrow="Health" title="System monitoring" description="Show service health, queue health, and AI latency metrics here.">
+          <FilterToolbar
+            filters={[
+              { label: 'All services', active: true },
+              { label: 'API' },
+              { label: 'Workers' },
+              { label: 'AI' },
+            ]}
+            aside={<div className="filter-chip">Last 15 min</div>}
+          />
+          <DataTableCard
+            columns={[
+              { label: 'Service' },
+              { label: 'Status' },
+              { label: 'Latency' },
+              { label: 'Signal' },
+            ]}
+            rows={[
+              {
+                key: 'backend-api',
+                primary: <><strong>Backend API</strong><span className="table-secondary">Core session and project endpoints</span></>,
+                cells: [
+                  <span className="inline-status"><span className="status-dot" />Healthy</span>,
+                  '132 ms',
+                  'Nominal',
+                ],
+              },
+              {
+                key: 'ai-worker',
+                primary: <><strong>AI worker</strong><span className="table-secondary">Analysis and reflection assistance jobs</span></>,
+                cells: [
+                  <span className="inline-status"><span className="status-dot" />Healthy</span>,
+                  '420 ms',
+                  'Watch',
+                ],
+              },
+            ]}
+          />
         </PageCard>
-        <PageCard title="Operator checklist" description="Surface active incidents, recent config changes, and audit-ready status summaries.">
+        <PageCard eyebrow="Operations" title="Operator checklist" description="Surface active incidents, recent config changes, and audit-ready status summaries.">
           <div className="summary-panel">
             <strong>Current watchlist</strong>
             <div className="kv-list">

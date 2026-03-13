@@ -9,7 +9,7 @@ type PageCardProps = {
 
 export function PageCard({ title, description, eyebrow, children }: PageCardProps) {
   return (
-    <section className="card stack">
+    <section className="stack" style={{ padding: '8px 0' }}>
       <div>
         {eyebrow ? <div className="section-eyebrow">{eyebrow}</div> : null}
         <h2>{title}</h2>

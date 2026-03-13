@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache';
 
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
 import { StatCard } from '@/components/stat-card';
 import { fetchSessionJson, postSessionJson } from '@/lib/api';
@@ -78,7 +79,7 @@ export default async function EvaluationReviewPage({
           <p className="muted">Di tahap ini mentor menilai kedewasaan refleksi dan kesiapan publikasi skor TAI.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">TAI score</div><div className="metric-value">{taiScore?.totalTaiScore ?? '–'}</div></div>
+          <AccentCard label="TAI score" value={taiScore?.totalTaiScore ?? '–'} />
           <div className="metric-strip">
             <StatCard label="Reflection" value={reflection?.workflowState ?? 'pending'} />
             <StatCard label="Published" value={taiScore?.publishedFlag ? 'Yes' : 'No'} />
@@ -140,12 +141,12 @@ export default async function EvaluationReviewPage({
               <div className="metric-card"><div className="metric-label">Reflective Maturity</div><div className="metric-value">{taiScore.reflectiveMaturityScore ?? 0}</div></div>
             </div>
             <div className="signal-box center-signal">
-              <strong style={{ fontSize: '1.5rem' }}>Total TAI: {taiScore.totalTaiScore ?? 0}</strong>
+              <strong className="text-lg">Total TAI: {taiScore.totalTaiScore ?? 0}</strong>
               {taiScore.publishedFlag && <p className="muted">✓ Already published</p>}
             </div>
             {!taiScore.publishedFlag && (
               <form action={publishTai}>
-                <div className="actions" style={{ justifyContent: 'center' }}>
+                <div className="actions actions-center">
                   <button className="button" type="submit">Publish TAI Score</button>
                 </div>
               </form>

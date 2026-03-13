@@ -120,7 +120,7 @@ export default async function EvaluationPage({
                 </div>
               </div>
               <div className="signal-box center-signal">
-                <strong style={{ fontSize: '1.5rem' }}>Total TAI: {taiScore.totalTaiScore ?? 0}</strong>
+                <strong className="text-lg">Total TAI: {taiScore.totalTaiScore ?? 0}</strong>
                 {taiScore.publishedFlag && <p className="muted">Published ✓</p>}
               </div>
             </div>

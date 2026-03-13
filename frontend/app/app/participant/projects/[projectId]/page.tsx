@@ -1,7 +1,9 @@
 import Link from 'next/link';
 
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { fetchSessionJson } from '@/lib/api';
 import { getSessionRole } from '@/lib/session';
 
@@ -36,19 +38,10 @@ export default async function ParticipantProjectOverviewPage({
           </div>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card">
-            <div className="metric-label">Current phase</div>
-            <div className="metric-value">{project.currentPhase}</div>
-          </div>
+          <AccentCard label="Current phase" value={project.currentPhase} />
           <div className="metric-strip">
-            <div className="metric-card">
-              <div className="metric-label">Workflow state</div>
-              <div className="metric-value">{project.workflowState}</div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">Mentor</div>
-              <div className="metric-value">{project.mentorUserId ?? 'Pending'}</div>
-            </div>
+            <StatCard label="Workflow state" value={project.workflowState} />
+            <StatCard label="Mentor" value={project.mentorUserId ?? 'Pending'} />
           </div>
         </div>
       </section>

@@ -1,5 +1,9 @@
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
+import { DataTableCard } from '@/components/data-table-card';
+import { FilterToolbar } from '@/components/filter-toolbar';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { getSessionRole } from '@/lib/session';
 
 export default async function ExecutiveProjectsPage() {
@@ -14,45 +18,43 @@ export default async function ExecutiveProjectsPage() {
           <p className="muted">Portfolio page harus menampilkan outcomes, momentum, dan high-level risk in a very scannable form.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Approved projects</div><div className="metric-value">12</div></div>
+          <AccentCard label="Approved projects" value={12} />
           <div className="metric-strip">
-            <div className="metric-card"><div className="metric-label">On track</div><div className="metric-value">9</div></div>
-            <div className="metric-card"><div className="metric-label">Needs attention</div><div className="metric-value">3</div></div>
+            <StatCard label="On track" value={9} />
+            <StatCard label="Needs attention" value={3} />
           </div>
         </div>
       </section>
       <div className="grid grid-2">
         <PageCard title="Project portfolio" description="Show approved projects only, with restricted detail.">
-          <div className="toolbar-row">
-            <div className="chip-row">
-              <div className="filter-chip is-active">Approved only</div>
-              <div className="filter-chip">High impact</div>
-              <div className="filter-chip">At risk</div>
-            </div>
-            <div className="filter-chip">Portfolio snapshot</div>
-          </div>
-          <div className="table-card">
-            <div className="table-head">
-              <span>Project</span>
-              <span>Impact</span>
-              <span>Momentum</span>
-              <span>Owner</span>
-            </div>
-            <div className="table-list">
-              <div className="table-grid">
-                <div className="table-primary"><strong>Digital Permit Service Improvement</strong><span className="table-secondary">Reduced processing time and increased citizen satisfaction</span></div>
-                <div className="table-cell">High</div>
-                <div className="table-cell">On track</div>
-                <div className="table-cell">Rina H.</div>
-              </div>
-              <div className="table-grid">
-                <div className="table-primary"><strong>Procurement Workflow Simplification</strong><span className="table-secondary">Policy-ready outcome with moderate implementation dependency</span></div>
-                <div className="table-cell">Medium</div>
-                <div className="table-cell">Needs support</div>
-                <div className="table-cell">Dimas A.</div>
-              </div>
-            </div>
-          </div>
+          <FilterToolbar
+            filters={[
+              { label: 'Approved only', active: true },
+              { label: 'High impact' },
+              { label: 'At risk' },
+            ]}
+            aside={<div className="filter-chip">Portfolio snapshot</div>}
+          />
+          <DataTableCard
+            columns={[
+              { label: 'Project' },
+              { label: 'Impact' },
+              { label: 'Momentum' },
+              { label: 'Owner' },
+            ]}
+            rows={[
+              {
+                key: 'permit-improvement',
+                primary: <><strong>Digital Permit Service Improvement</strong><span className="table-secondary">Reduced processing time and increased citizen satisfaction</span></>,
+                cells: ['High', 'On track', 'Rina H.'],
+              },
+              {
+                key: 'procurement-simplification',
+                primary: <><strong>Procurement Workflow Simplification</strong><span className="table-secondary">Policy-ready outcome with moderate implementation dependency</span></>,
+                cells: ['Medium', 'Needs support', 'Dimas A.'],
+              },
+            ]}
+          />
         </PageCard>
         <PageCard title="Reading pattern" description="Executives should be able to spot priority projects in seconds using strong status summaries and concise outcome language.">
           <div className="summary-panel">

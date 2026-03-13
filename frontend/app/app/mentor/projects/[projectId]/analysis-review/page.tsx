@@ -2,6 +2,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
 import { StatCard } from '@/components/stat-card';
 import { fetchSessionJson, postSessionJson } from '@/lib/api';
@@ -60,7 +61,7 @@ export default async function AnalysisReviewPage({
           <p className="muted">Fokus pada kejelasan problem, kualitas root cause, dan kecukupan stakeholder mapping.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">State</div><div className="metric-value">{problem.workflowState ?? project.workflowState}</div></div>
+          <AccentCard label="State" value={problem.workflowState ?? project.workflowState} />
           <div className="metric-strip">
             <StatCard label="Phase" value="Analysis" />
             {problem.confidenceScore != null && <StatCard label="AI Confidence" value={`${(problem.confidenceScore * 100).toFixed(0)}%`} />}
@@ -108,7 +109,7 @@ export default async function AnalysisReviewPage({
             </div>
           </form>
           {problem.reviewerComment && (
-            <div className="signal-box" style={{ marginTop: '1rem' }}>
+            <div className="signal-box mt-sm">
               <strong>Previous feedback</strong>
               <p>{problem.reviewerComment}</p>
             </div>

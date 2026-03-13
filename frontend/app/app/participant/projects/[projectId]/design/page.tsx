@@ -70,7 +70,7 @@ export default async function DesignPage({
                   <div key={option.decisionOptionId} className={`project-row ${option.selectedFlag ? 'selected' : ''}`}>
                     <div>
                       <strong>{option.optionRank}. {option.optionTitle}</strong>
-                      {option.selectedFlag && <span className="pill" style={{ marginLeft: '0.5rem' }}>Selected</span>}
+                      {option.selectedFlag && <span className="pill ml-sm">Selected</span>}
                       <p className="muted">{option.optionDescription}</p>
                       <div className="project-meta">
                         <span className="meta-chip">benefit: {option.benefitScore ?? '–'}</span>
@@ -106,7 +106,7 @@ export default async function DesignPage({
             </form>
           )}
           {selectedOption && (
-            <div className="signal-box" style={{ marginTop: '1rem' }}>
+            <div className="signal-box mt-sm">
               <strong>Current selection</strong>
               <p>{selectedOption.optionTitle} — {selectedOption.optionDescription}</p>
             </div>

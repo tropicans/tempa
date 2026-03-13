@@ -95,23 +95,23 @@ export default async function AnalysisPage({
               <strong>Root causes</strong>
               <ul className="plain-list">
                 {(problem.rootCauses ?? []).map((item) => <li key={item}>{item}</li>)}
-                {(problem.rootCauses ?? []).length === 0 ? <li className="muted">No root causes generated yet.</li> : null}
+                {(problem.rootCauses ?? []).length === 0 && <li className="muted">No root causes generated yet.</li>}
               </ul>
             </div>
             <div className="list-panel">
               <strong>Stakeholders</strong>
               <ul className="plain-list">
                 {(problem.stakeholders ?? []).map((item) => <li key={item}>{item}</li>)}
-                {(problem.stakeholders ?? []).length === 0 ? <li className="muted">No stakeholders generated yet.</li> : null}
+                {(problem.stakeholders ?? []).length === 0 && <li className="muted">No stakeholders generated yet.</li>}
               </ul>
             </div>
           </div>
         </PageCard>
         <PageCard eyebrow="Mentor checkpoint" title="What good looks like" description="Use this checklist before submitting for mentor review.">
           <div className="journey-list">
-            <div className="journey-step"><strong>1</strong><div><b>Specific problem statement</b><p className="muted">Clear scope, context, and current pain point.</p></div></div>
-            <div className="journey-step"><strong>2</strong><div><b>Root-cause quality</b><p className="muted">Not only symptoms, but drivers of the issue.</p></div></div>
-            <div className="journey-step"><strong>3</strong><div><b>Stakeholder coverage</b><p className="muted">Capture who is affected and who can enable change.</p></div></div>
+            <div className="journey-step"><strong>1</strong><div><h3>Specific problem statement</h3><p className="muted">Clear scope, context, and current pain point.</p></div></div>
+            <div className="journey-step"><strong>2</strong><div><h3>Root-cause quality</h3><p className="muted">Not only symptoms, but drivers of the issue.</p></div></div>
+            <div className="journey-step"><strong>3</strong><div><h3>Stakeholder coverage</h3><p className="muted">Capture who is affected and who can enable change.</p></div></div>
           </div>
         </PageCard>
       </PhaseWorkspace>

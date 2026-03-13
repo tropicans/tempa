@@ -2,6 +2,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
 import { StatCard } from '@/components/stat-card';
 import { fetchSessionJson, postSessionJson } from '@/lib/api';
@@ -61,7 +62,7 @@ export default async function DesignReviewPage({
           <p className="muted">Bandingkan manfaat, risiko, dan feasibility sebelum peserta masuk ke implementation plan.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Selected option</div><div className="metric-value">{selectedOption?.optionTitle ?? 'None'}</div></div>
+          <AccentCard label="Selected option" value={selectedOption?.optionTitle ?? 'None'} />
           <div className="metric-strip">
             <StatCard label="Phase" value="Design" />
             <StatCard label="Options" value={options.length} />
@@ -74,7 +75,7 @@ export default async function DesignReviewPage({
             {options.map((option) => (
               <div key={option.decisionOptionId} className={`decision-box ${option.selectedFlag ? 'selected' : ''}`}>
                 <strong>{option.optionRank}. {option.optionTitle}</strong>
-                {option.selectedFlag && <span className="pill" style={{ marginLeft: '0.5rem' }}>Selected</span>}
+                {option.selectedFlag && <span className="pill ml-sm">Selected</span>}
                 <p className="muted">{option.optionDescription}</p>
                 <div className="project-meta">
                   <span className="meta-chip">benefit: {option.benefitScore ?? '–'}</span>

@@ -2,6 +2,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
 import { StatCard } from '@/components/stat-card';
 import { fetchSessionJson, postSessionJson } from '@/lib/api';
@@ -68,7 +69,7 @@ export default async function PlanReviewPage({
           <p className="muted">Periksa milestone, KPI, dan risk handling sebelum proyek masuk implementation mode.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">State</div><div className="metric-value">{plan?.workflowState ?? project.workflowState}</div></div>
+          <AccentCard label="State" value={plan?.workflowState ?? project.workflowState} />
           <div className="metric-strip">
             <StatCard label="Milestones" value={milestones.length} />
             <StatCard label="KPIs" value={kpis.length} />
@@ -121,7 +122,7 @@ export default async function PlanReviewPage({
             </div>
           </form>
           {plan?.reviewerComment && (
-            <div className="signal-box" style={{ marginTop: '1rem' }}>
+            <div className="signal-box mt-sm">
               <strong>Previous feedback</strong>
               <p>{plan.reviewerComment}</p>
             </div>

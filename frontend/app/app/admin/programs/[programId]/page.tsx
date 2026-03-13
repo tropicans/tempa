@@ -1,5 +1,7 @@
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { getSessionRole } from '@/lib/session';
 
 export default async function AdminProgramDetailPage() {
@@ -14,10 +16,10 @@ export default async function AdminProgramDetailPage() {
           <p className="muted">Program detail sebaiknya menjadi titik koordinasi antara setup, cohort progress, dan reporting.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Program state</div><div className="metric-value">Live</div></div>
+          <AccentCard label="Program state" value="Live" />
           <div className="metric-strip">
-            <div className="metric-card"><div className="metric-label">Cohorts</div><div className="metric-value">1</div></div>
-            <div className="metric-card"><div className="metric-label">Reporting</div><div className="metric-value">Ready</div></div>
+            <StatCard label="Cohorts" value={1} />
+            <StatCard label="Reporting" value="Ready" />
           </div>
         </div>
       </section>

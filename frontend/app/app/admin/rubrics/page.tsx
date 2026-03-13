@@ -1,5 +1,7 @@
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { getSessionRole } from '@/lib/session';
 
 export default async function AdminRubricsPage() {
@@ -14,10 +16,10 @@ export default async function AdminRubricsPage() {
           <p className="muted">Rubric management harus menjelaskan versioning, dimensions, dan governance secara sederhana.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Active rubric</div><div className="metric-value">v1</div></div>
+          <AccentCard label="Active rubric" value="v1" />
           <div className="metric-strip">
-            <div className="metric-card"><div className="metric-label">Dimensions</div><div className="metric-value">4</div></div>
-            <div className="metric-card"><div className="metric-label">Versioning</div><div className="metric-value">Tracked</div></div>
+            <StatCard label="Dimensions" value={4} />
+            <StatCard label="Versioning" value="Tracked" />
           </div>
         </div>
       </section>

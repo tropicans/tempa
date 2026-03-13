@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { revalidatePath } from 'next/cache';
 
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { fetchSessionJson, postSessionJson } from '@/lib/api';
 import { getSessionRole } from '@/lib/session';
 
@@ -41,19 +43,10 @@ export default async function ParticipantProjectsPage() {
           <p className="muted">Setiap proyek di TEMPA menjadi wadah dari problem framing sampai evidence dan TAI.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card">
-            <div className="metric-label">Visible projects</div>
-            <div className="metric-value">{response.items.length}</div>
-          </div>
+          <AccentCard label="Visible projects" value={response.items.length} />
           <div className="metric-strip">
-            <div className="metric-card">
-              <div className="metric-label">Current cohort</div>
-              <div className="metric-value">demo-cohort</div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">Workspace model</div>
-              <div className="metric-value">Phase-based</div>
-            </div>
+            <StatCard label="Current cohort" value="demo-cohort" />
+            <StatCard label="Workspace model" value="Phase-based" />
           </div>
         </div>
       </section>
@@ -92,7 +85,7 @@ export default async function ParticipantProjectsPage() {
               </div>
             </Link>
           ))}
-          {response.items.length === 0 ? <p className="muted">No visible projects yet.</p> : null}
+          {response.items.length === 0 && <p className="muted">No visible projects yet.</p>}
         </div>
       </PageCard>
     </AppShell>

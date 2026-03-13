@@ -1,5 +1,9 @@
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
+import { DataTableCard } from '@/components/data-table-card';
+import { FilterToolbar } from '@/components/filter-toolbar';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { getSessionRole } from '@/lib/session';
 
 export default async function AdminCohortParticipantsPage() {
@@ -14,46 +18,48 @@ export default async function AdminCohortParticipantsPage() {
           <p className="muted">Enrollment view harus memudahkan admin membaca status, bukan sekadar menampilkan tabel panjang.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Active enrollments</div><div className="metric-value">24</div></div>
+          <AccentCard label="Active enrollments" value={24} />
           <div className="metric-strip">
-            <div className="metric-card"><div className="metric-label">Pending invites</div><div className="metric-value">3</div></div>
-            <div className="metric-card"><div className="metric-label">Seat usage</div><div className="metric-value">80%</div></div>
+            <StatCard label="Pending invites" value={3} />
+            <StatCard label="Seat usage" value="80%" />
           </div>
         </div>
       </section>
       <div className="grid grid-2">
         <PageCard title="Enrollments" description="Render participant list, search, and enrollment actions.">
-          <div className="toolbar-row">
-            <div className="chip-row">
-              <div className="filter-chip is-active">All participants</div>
-              <div className="filter-chip">Invited</div>
-              <div className="filter-chip">Active</div>
-              <div className="filter-chip">Needs mentor</div>
-            </div>
-            <button className="button" type="button">Invite participant</button>
-          </div>
-          <div className="table-card">
-            <div className="table-head">
-              <span>Participant</span>
-              <span>Status</span>
-              <span>Mentor</span>
-              <span>Project</span>
-            </div>
-            <div className="table-list">
-              <div className="table-grid">
-                <div className="table-primary"><strong>Rina Hartono</strong><span className="table-secondary">rinah@agency.go.id</span></div>
-                <div className="table-cell"><span className="inline-status"><span className="status-dot" />Active</span></div>
-                <div className="table-cell">Budi S.</div>
-                <div className="table-cell">Permit reform</div>
-              </div>
-              <div className="table-grid">
-                <div className="table-primary"><strong>Andi Prasetyo</strong><span className="table-secondary">andip@agency.go.id</span></div>
-                <div className="table-cell">Invited</div>
-                <div className="table-cell">Unassigned</div>
-                <div className="table-cell">Not started</div>
-              </div>
-            </div>
-          </div>
+          <FilterToolbar
+            filters={[
+              { label: 'All participants', active: true },
+              { label: 'Invited' },
+              { label: 'Active' },
+              { label: 'Needs mentor' },
+            ]}
+            aside={<button className="button" type="button">Invite participant</button>}
+          />
+          <DataTableCard
+            columns={[
+              { label: 'Participant' },
+              { label: 'Status' },
+              { label: 'Mentor' },
+              { label: 'Project' },
+            ]}
+            rows={[
+              {
+                key: 'rina-hartono',
+                primary: <><strong>Rina Hartono</strong><span className="table-secondary">rinah@agency.go.id</span></>,
+                cells: [
+                  <span className="inline-status"><span className="status-dot" />Active</span>,
+                  'Budi S.',
+                  'Permit reform',
+                ],
+              },
+              {
+                key: 'andi-prasetyo',
+                primary: <><strong>Andi Prasetyo</strong><span className="table-secondary">andip@agency.go.id</span></>,
+                cells: ['Invited', 'Unassigned', 'Not started'],
+              },
+            ]}
+          />
         </PageCard>
         <PageCard title="UX direction" description="Prioritize search, status chips, and simple bulk actions so enrollment work stays fast under pressure.">
           <div className="summary-panel">

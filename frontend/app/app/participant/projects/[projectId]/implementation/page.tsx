@@ -120,13 +120,13 @@ export default async function ImplementationPage({
             </div>
           </form>
           {logs.length > 0 && (
-            <div className="project-list" style={{ marginTop: '1rem' }}>
+            <div className="project-list mt-sm">
               {logs.map((log) => (
                 <div key={log.progressLogId} className="project-row">
                   <div>
                     <strong>{log.phaseName} — {log.progressPercent}%</strong>
                     {log.statusNote && <p className="muted">{log.statusNote}</p>}
-                    {log.riskNote && <p className="tiny-note" style={{ color: '#a16207' }}>Risk: {log.riskNote}</p>}
+                    {log.riskNote && <p className="tiny-note text-warning">Risk: {log.riskNote}</p>}
                     <div className="project-meta">
                       <span className="meta-chip">{new Date(log.loggedAt).toLocaleDateString()}</span>
                     </div>
@@ -135,7 +135,7 @@ export default async function ImplementationPage({
               ))}
             </div>
           )}
-          {logs.length === 0 && <p className="muted" style={{ marginTop: '1rem' }}>No progress entries yet.</p>}
+          {logs.length === 0 && <p className="muted mt-sm">No progress entries yet.</p>}
         </PageCard>
 
         <PageCard eyebrow="Measure" title="Impact metrics" description="Record baseline, target, and actual values for your key performance indicators.">
@@ -169,7 +169,7 @@ export default async function ImplementationPage({
             </div>
           </form>
           {metrics.length > 0 && (
-            <div className="project-list" style={{ marginTop: '1rem' }}>
+            <div className="project-list mt-sm">
               {metrics.map((metric) => (
                 <div key={metric.impactMetricId} className="project-row">
                   <div>
@@ -185,7 +185,7 @@ export default async function ImplementationPage({
               ))}
             </div>
           )}
-          {metrics.length === 0 && <p className="muted" style={{ marginTop: '1rem' }}>No impact metrics recorded yet.</p>}
+          {metrics.length === 0 && <p className="muted mt-sm">No impact metrics recorded yet.</p>}
         </PageCard>
         <PageCard eyebrow="Operating rhythm" title="Keep implementation readable" description="This view should surface progress and proof, not just raw entries.">
           <div className="journey-list">

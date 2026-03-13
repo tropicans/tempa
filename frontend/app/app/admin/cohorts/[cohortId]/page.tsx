@@ -1,5 +1,7 @@
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { getSessionRole } from '@/lib/session';
 
 export default async function AdminCohortPage() {
@@ -14,10 +16,10 @@ export default async function AdminCohortPage() {
           <p className="muted">Halaman ini sebaiknya menjadi ringkasan cohort health, phase windows, dan assignment readiness.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Cohort status</div><div className="metric-value">Active</div></div>
+          <AccentCard label="Cohort status" value="Active" />
           <div className="metric-strip">
-            <div className="metric-card"><div className="metric-label">Participants</div><div className="metric-value">24</div></div>
-            <div className="metric-card"><div className="metric-label">Mentors</div><div className="metric-value">6</div></div>
+            <StatCard label="Participants" value={24} />
+            <StatCard label="Mentors" value={6} />
           </div>
         </div>
       </section>

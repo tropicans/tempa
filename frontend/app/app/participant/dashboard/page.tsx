@@ -1,7 +1,10 @@
 import Link from 'next/link';
+import { LayoutDashboard, FolderKanban, Target, TrendingUp } from 'lucide-react';
 
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { fetchSessionJson } from '@/lib/api';
 import { getSessionRole } from '@/lib/session';
 
@@ -20,61 +23,63 @@ export default async function ParticipantDashboardPage() {
   }));
 
   return (
-    <AppShell title="Participant Dashboard" subtitle="Track projects, phase progress, and TAI growth." roleLabel={role}>
-      <section className="hero-banner card">
-        <div className="hero-copy">
-          <div className="section-eyebrow">Today at a glance</div>
-          <h2 className="hero-title">Bangun solusi organisasi, bukan sekadar menyelesaikan modul.</h2>
-          <p className="muted">
-            Dashboard ini merangkum fase proyek aktif, kemajuan evidence, dan sinyal TAI terakhir agar kamu tahu apa yang harus dikerjakan berikutnya.
-          </p>
-          <div className="hero-actions">
-            <Link className="button" href="/app/participant/projects">Open project workspace</Link>
-            <Link className="button secondary" href="/app/participant/projects">Create or continue project</Link>
+    <AppShell
+      title="Participant Dashboard"
+      subtitle="Track projects, phase progress, and TAI growth."
+      roleLabel={role}
+      icon={<LayoutDashboard size={22} />}
+      stats={
+        <>
+          <div className="compact-stat">
+            <div className="compact-stat-value">{dashboard.activeProjectCount}</div>
+            <div className="compact-stat-label">Projects</div>
           </div>
-        </div>
-        <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card">
-            <div className="metric-label">Current focus</div>
-            <div className="metric-value">{dashboard.currentPhase}</div>
+          <div className="compact-stat">
+            <div className="compact-stat-value" style={{ textTransform: 'capitalize' }}>{dashboard.currentPhase}</div>
+            <div className="compact-stat-label">Phase</div>
           </div>
-          <div className="metric-strip">
-            <div className="metric-card">
-              <div className="metric-label">Active projects</div>
-              <div className="metric-value">{dashboard.activeProjectCount}</div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">Current phase</div>
-              <div className="metric-value">{dashboard.currentPhase}</div>
-            </div>
-            <div className="metric-card">
-              <div className="metric-label">Latest TAI</div>
-              <div className="metric-value">{dashboard.latestTaiScore ? dashboard.latestTaiScore.totalTaiScore : '--'}</div>
-            </div>
+          <div className="compact-stat">
+            <div className="compact-stat-value">{dashboard.latestTaiScore?.totalTaiScore ?? '--'}</div>
+            <div className="compact-stat-label">TAI</div>
           </div>
-        </div>
-      </section>
+        </>
+      }
+    >
+      <div className="metric-strip">
+        <AccentCard label="Current focus" value={dashboard.currentPhase} />
+        <StatCard label="Active projects" value={dashboard.activeProjectCount} icon={<FolderKanban size={16} />} />
+        <StatCard label="Latest TAI" value={dashboard.latestTaiScore?.totalTaiScore ?? 'No score'} icon={<Target size={16} />} />
+      </div>
+
       <div className="grid grid-3">
-        <PageCard eyebrow="Project signal" title="Current momentum" description="Use this to understand where your project needs the next push.">
+        <PageCard eyebrow="Project signal" title="Current momentum" description="Where your project needs the next push.">
           <div className="stack">
             <div className="signal-box">
               <strong>Phase checkpoint</strong>
-              <p className="muted">You are currently in the {dashboard.currentPhase} phase. Focus on preparing the next validated artifact.</p>
+              <p className="muted" style={{ fontSize: 'var(--text-sm)' }}>
+                You are in the <strong>{dashboard.currentPhase}</strong> phase. Focus on preparing the next validated artifact.
+              </p>
             </div>
-            <Link className="nav-link" href="/app/participant/projects">Go to project list</Link>
+            <Link className="button secondary" href="/app/participant/projects" style={{ width: 'fit-content' }}>
+              <FolderKanban size={16} /> Go to projects
+            </Link>
           </div>
         </PageCard>
-        <PageCard eyebrow="Evidence" title="TAI readiness" description="Score visibility improves once implementation evidence and reflection are complete.">
-          <div className="stack">
-            <p className="stat">{dashboard.latestTaiScore ? dashboard.latestTaiScore.totalTaiScore : 'No score yet'}</p>
-            <p className="muted">If no score is published yet, continue building evidence and submit your reflection for mentor review.</p>
+
+        <PageCard eyebrow="Evidence" title="TAI readiness" description="Score visibility improves once evidence and reflection are complete.">
+          <div className="stack" style={{ alignItems: 'center' }}>
+            <p className="stat">{dashboard.latestTaiScore?.totalTaiScore ?? '--'}</p>
+            <p className="muted" style={{ fontSize: 'var(--text-sm)', textAlign: 'center' }}>
+              Continue building evidence and submit your reflection for mentor review.
+            </p>
           </div>
         </PageCard>
-        <PageCard eyebrow="Next action" title="Recommended sequence" description="Use one stable pattern so you always know the next move.">
+
+        <PageCard eyebrow="Next action" title="Recommended sequence" description="Follow this pattern for consistent progress.">
           <div className="journey-list">
-            <div className="journey-step"><strong>1</strong><div><h3>Review your active project</h3><p className="muted">Open the current workspace and scan the latest feedback before editing.</p></div></div>
-            <div className="journey-step"><strong>2</strong><div><h3>Complete the phase deliverable</h3><p className="muted">Focus on the single artifact that unblocks the next mentor checkpoint.</p></div></div>
-            <div className="journey-step"><strong>3</strong><div><h3>Submit when evidence is ready</h3><p className="muted">Use reflection and metrics to strengthen the quality of your final submission.</p></div></div>
+            <div className="journey-step"><strong>1</strong><div><h3 style={{ fontSize: 'var(--text-base)' }}>Review active project</h3><p className="muted" style={{ fontSize: 'var(--text-sm)' }}>Scan latest feedback before editing.</p></div></div>
+            <div className="journey-step"><strong>2</strong><div><h3 style={{ fontSize: 'var(--text-base)' }}>Complete the deliverable</h3><p className="muted" style={{ fontSize: 'var(--text-sm)' }}>Focus on the artifact that unblocks the next checkpoint.</p></div></div>
+            <div className="journey-step"><strong>3</strong><div><h3 style={{ fontSize: 'var(--text-base)' }}>Submit when ready</h3><p className="muted" style={{ fontSize: 'var(--text-sm)' }}>Use reflection and metrics for quality.</p></div></div>
           </div>
         </PageCard>
       </div>

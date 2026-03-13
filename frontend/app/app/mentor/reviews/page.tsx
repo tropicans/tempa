@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
 import { ReviewCard } from '@/components/review-card';
 import { StatCard } from '@/components/stat-card';
@@ -44,7 +45,7 @@ export default async function MentorReviewsPage() {
           <p className="muted">Queue ini menampilkan submission yang membutuhkan keputusan mentor agar proyek peserta tetap bergerak.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Pending review</div><div className="metric-value">{reviewable.length}</div></div>
+          <AccentCard label="Pending review" value={reviewable.length} />
           <div className="metric-strip">
             <StatCard label="Total projects" value={allProjects.length} />
             <StatCard label="Submitted" value={allProjects.filter((p) => p.workflowState === 'submitted').length} />

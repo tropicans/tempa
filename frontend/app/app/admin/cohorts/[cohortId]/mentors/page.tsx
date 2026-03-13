@@ -1,5 +1,7 @@
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { getSessionRole } from '@/lib/session';
 
 export default async function AdminCohortMentorsPage() {
@@ -14,10 +16,10 @@ export default async function AdminCohortMentorsPage() {
           <p className="muted">Admin harus bisa melihat distribusi mentoring dan memperbaiki overload tanpa berpindah banyak layar.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Assignments</div><div className="metric-value">24</div></div>
+          <AccentCard label="Assignments" value={24} />
           <div className="metric-strip">
-            <div className="metric-card"><div className="metric-label">Mentors active</div><div className="metric-value">6</div></div>
-            <div className="metric-card"><div className="metric-label">Load balance</div><div className="metric-value">Stable</div></div>
+            <StatCard label="Mentors active" value={6} />
+            <StatCard label="Load balance" value="Stable" />
           </div>
         </div>
       </section>

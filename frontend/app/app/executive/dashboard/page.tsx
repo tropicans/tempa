@@ -1,5 +1,7 @@
 import { AppShell } from '@/components/app-shell';
+import { AccentCard } from '@/components/accent-card';
 import { PageCard } from '@/components/page-card';
+import { StatCard } from '@/components/stat-card';
 import { getSessionRole } from '@/lib/session';
 
 export default async function ExecutiveDashboardPage() {
@@ -14,11 +16,11 @@ export default async function ExecutiveDashboardPage() {
           <p className="muted">Executive mode menekankan portfolio health, implementation rate, dan distribusi TAI sebagai sinyal strategis.</p>
         </div>
         <div className="hero-panel-surface stack">
-          <div className="metric-card accent-card"><div className="metric-label">Portfolio health</div><div className="metric-value">Stable</div></div>
+          <AccentCard label="Portfolio health" value="Stable" />
           <div className="metric-strip">
-            <div className="metric-card"><div className="metric-label">Programs</div><div className="metric-value">1</div></div>
-            <div className="metric-card"><div className="metric-label">Projects</div><div className="metric-value">12</div></div>
-            <div className="metric-card"><div className="metric-label">Avg TAI</div><div className="metric-value">71.5</div></div>
+            <StatCard label="Programs" value={1} />
+            <StatCard label="Projects" value={12} />
+            <StatCard label="Avg TAI" value={71.5} />
           </div>
         </div>
       </section>

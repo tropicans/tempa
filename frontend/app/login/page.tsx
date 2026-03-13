@@ -1,80 +1,124 @@
 import Link from 'next/link';
+import {
+  FolderKanban,
+  ClipboardCheck,
+  Briefcase,
+  BarChart3,
+  Shield,
+  ArrowRight,
+  KeyRound,
+} from 'lucide-react';
 
-import { AppShell } from '@/components/app-shell';
-import { PageCard } from '@/components/page-card';
+const roles = [
+  {
+    key: 'participant',
+    label: 'Participant',
+    href: '/login/as/participant',
+    icon: <FolderKanban size={20} />,
+    title: 'Drive project progress',
+    desc: 'Move from analysis to evaluation with a focused phase workspace and clear next actions.',
+    color: '#6C5CE7',
+  },
+  {
+    key: 'mentor',
+    label: 'Mentor',
+    href: '/login/as/mentor',
+    icon: <ClipboardCheck size={20} />,
+    title: 'Review with confidence',
+    desc: 'See review queues, pending checkpoints, and project context in one cleaner flow.',
+    color: '#00B894',
+  },
+  {
+    key: 'program_admin',
+    label: 'Program Admin',
+    href: '/login/as/program_admin',
+    icon: <Briefcase size={20} />,
+    title: 'Run program operations',
+    desc: 'Manage programs, cohorts, and setup tasks without losing governance visibility.',
+    color: '#0984E3',
+  },
+  {
+    key: 'executive',
+    label: 'Executive',
+    href: '/login/as/executive_viewer',
+    icon: <BarChart3 size={20} />,
+    title: 'Read portfolio health fast',
+    desc: 'Focus on strategic outcomes, implementation momentum, and talent indicators.',
+    color: '#E17055',
+  },
+  {
+    key: 'operator',
+    label: 'Operator',
+    href: '/login/as/platform_operator',
+    icon: <Shield size={20} />,
+    title: 'Keep the platform reliable',
+    desc: 'Monitor health, audit changes, and maintain support workflows from one place.',
+    color: '#636E72',
+  },
+];
 
 export default function LoginPage() {
   return (
-    <main className="shell landing-shell subtle-grid">
-      <AppShell title="TEMPA access" subtitle="A calmer, more navigable enterprise workspace inspired by modern analytics products.">
-        <section className="hero-banner card">
-          <div className="hero-copy">
-            <div className="section-eyebrow">Single sign-on</div>
-            <h2 className="hero-title">Masuk ke workspace yang lebih sederhana, bersih, dan mudah dibaca.</h2>
-            <p className="muted">
-              Untuk saat ini akses masih memakai role demo. Nantinya area ini bisa langsung diganti menjadi SSO institusi tanpa mengubah struktur experience utama.
-            </p>
-            <div className="hero-actions">
-              <Link className="button" href="/login/as/participant">
-                Masuk sebagai participant
-              </Link>
-              <Link className="button secondary" href="/login/as/mentor">
-                Coba mentor view
-              </Link>
-            </div>
+    <div className="shell subtle-grid" style={{ paddingTop: '60px' }}>
+      <section style={{ maxWidth: '720px', margin: '0 auto', textAlign: 'center' }}>
+        {/* Header */}
+        <div className="stack" style={{ gap: '16px', animation: 'fadeUp 0.5s ease both', marginBottom: '32px' }}>
+          <div className="pill" style={{ margin: '0 auto' }}>
+            <KeyRound size={12} /> Single sign-on
           </div>
-          <div className="hero-panel-surface stack">
-            <div className="metric-card accent-card">
-              <div className="metric-label">Experience direction</div>
-              <div className="metric-value">Clean enterprise</div>
-            </div>
-            <div className="metric-strip">
-              <div className="metric-card">
-                <div className="metric-label">Auth today</div>
-                <div className="metric-value">Role switch</div>
-              </div>
-              <div className="metric-card">
-                <div className="metric-label">Access model</div>
-                <div className="metric-value">RBAC</div>
-              </div>
-              <div className="metric-card">
-                <div className="metric-label">Future</div>
-                <div className="metric-value">SSO</div>
-              </div>
-            </div>
+          <h1 className="hero-title">
+            Masuk ke workspace Anda
+          </h1>
+          <p className="muted" style={{ maxWidth: '480px', margin: '0 auto' }}>
+            Pilih role untuk masuk. Nantinya area ini akan menjadi SSO institusi tanpa mengubah experience utama.
+          </p>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+            <Link className="button" href="/login/as/participant">
+              Masuk sebagai participant <ArrowRight size={16} />
+            </Link>
           </div>
-        </section>
+        </div>
 
-        <PageCard eyebrow="Demo roles" title="Choose a workspace" description="Each role opens into a dedicated navigation model designed for its primary responsibilities.">
-          <div className="grid grid-3">
-            <Link className="feature-tile" href="/login/as/participant">
-              <div className="feature-kicker">Participant</div>
-              <strong>Drive project progress</strong>
-              <span className="muted">Move from analysis to evaluation with a focused phase workspace and clear next actions.</span>
-            </Link>
-            <Link className="feature-tile" href="/login/as/mentor">
-              <div className="feature-kicker">Mentor</div>
-              <strong>Review with confidence</strong>
-              <span className="muted">See review queues, pending checkpoints, and project context in one cleaner flow.</span>
-            </Link>
-            <Link className="feature-tile" href="/login/as/program_admin">
-              <div className="feature-kicker">Program admin</div>
-              <strong>Run program operations</strong>
-              <span className="muted">Manage programs, cohorts, and setup tasks without losing governance visibility.</span>
-            </Link>
-            <Link className="feature-tile" href="/login/as/executive_viewer">
-              <div className="feature-kicker">Executive</div>
-              <strong>Read portfolio health fast</strong>
-              <span className="muted">Focus on strategic outcomes, implementation momentum, and talent indicators.</span>
-            </Link>
-            <Link className="feature-tile" href="/login/as/platform_operator">
-              <div className="feature-kicker">Operator</div>
-              <strong>Keep the platform reliable</strong>
-              <span className="muted">Monitor health, audit changes, and maintain support workflows from one place.</span>
-            </Link>
+        {/* Role cards */}
+        <div className="stack" style={{ gap: '12px', animation: 'fadeUp 0.5s ease 0.2s both', textAlign: 'left' }}>
+          <div className="section-eyebrow">Demo roles</div>
+          <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
+            {roles.map((role) => (
+              <Link
+                key={role.key}
+                className="feature-tile"
+                href={role.href}
+                style={{ position: 'relative', overflow: 'hidden' }}
+              >
+                <div
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '3px',
+                    background: role.color,
+                  }}
+                />
+                <div
+                  className="feature-kicker"
+                  style={{
+                    background: `${role.color}15`,
+                    color: role.color,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  {role.icon} {role.label}
+                </div>
+                <strong>{role.title}</strong>
+                <span className="muted" style={{ fontSize: 'var(--text-sm)' }}>{role.desc}</span>
+              </Link>
+            ))}
           </div>
-        </PageCard>
-      </AppShell>
-    </main>
+        </div>
+      </section>
+    </div>
   );
 }
