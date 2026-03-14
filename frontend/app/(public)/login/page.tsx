@@ -72,9 +72,9 @@ export default function LoginPage() {
             Pilih role untuk masuk. Nantinya area ini akan menjadi SSO institusi tanpa mengubah experience utama.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
-            <Link className="button" href="/login/as/participant">
+            <a className="button" href="/login/as/participant">
               Masuk sebagai participant <ArrowRight size={16} />
-            </Link>
+            </a>
           </div>
         </div>
 
@@ -82,7 +82,7 @@ export default function LoginPage() {
           <div className="section-eyebrow">Demo roles</div>
           <div className="grid" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '12px' }}>
             {roles.map((role) => (
-              <Link
+              <a
                 key={role.key}
                 className="feature-tile"
                 href={role.href}
@@ -112,7 +112,7 @@ export default function LoginPage() {
                 </div>
                 <strong>{role.title}</strong>
                 <span className="muted" style={{ fontSize: 'var(--text-sm)' }}>{role.desc}</span>
-              </Link>
+              </a>
             ))}
           </div>
         </div>
