@@ -4,13 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run test:layout && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:layout": "node scripts/test-root-layout.mjs",
+    "test:public-shell": "node scripts/test-public-routes-shell.mjs",
+    "test:smoke": "npm run test:public-shell"
   },
   "dependencies": {
     "lucide-react": "^0.577.0",
-    "next": "14.2.15",
+    "next": "14.2.35",
     "react": "18.3.1",
     "react-dom": "18.3.1"
   },
